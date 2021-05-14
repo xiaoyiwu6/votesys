@@ -1,0 +1,67 @@
+.bg {
+  width: 1000px;
+  height: 500px;
+  margin-left: auto;
+  margin-right: auto; }
+  .bg ul {
+    width: 500px;
+    height: 500px;
+    position: relative; }
+  .bg .player1 {
+    width: 500px;
+    height: 500px;
+    float: left; }
+    .bg .player1 li {
+      width: 40px;
+      height: 40px;
+      margin-right: 60px;
+      border-radius: 100px;
+      border: 1px #f00 solid;
+      text-align: center;
+      line-height: 40px;
+      background: #f9f;
+      float: right; }
+    .bg .player1 span {
+      width: 100px;
+      height: 0px;
+      position: absolute;
+      right: 30px;
+      bottom: 10px;
+      background: red; }
+    .bg .player1 em {
+      margin-top: 60px;
+      float: left; }
+  .bg .player2 {
+    width: 500px;
+    height: 500px;
+    float: right; }
+    .bg .player2 li {
+      width: 40px;
+      height: 40px;
+      margin-left: 60px;
+      border-radius: 100px;
+      border: 1px #f00 solid;
+      text-align: center;
+      line-height: 40px;
+      background: #f9f;
+      float: left; }
+    .bg .player2 span {
+      width: 100px;
+      height: 0px;
+      position: absolute;
+      left: 30px;
+      bottom: 10px;
+      background: red; }
+    .bg .player2 em {
+      margin-top: 60px;
+      float: right; }
+  .bg p {
+    width: 100px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    position: absolute;
+    top: -20px;
+    font-size: 20px; }
+
+/*# sourceMappingURL=screen.css.map */

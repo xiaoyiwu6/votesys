@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtdx.dao.PlayerDao">
+	<select id="getAllPlayers" resultType="com.xtdx.pojo.Player">
+		select * from player
+	</select>
+	<select id="getPlayerById" parameterType="int" resultType="com.xtdx.pojo.Player">
+		select * from player where playerId=#{playerId}
+	</select>
+	<insert id="addPlayer" parameterType="com.xtdx.pojo.Player">
+		insert into player(playername,state,num,picAddress,dateOfBirth,smallImg,sex)
+		values(#{playername},#{state},#{num},#{picAddress},#{dateOfBirth},#{smallImg},#{sex})
+	</insert>
+	<delete id="deletePlayer" parameterType="int">
+		delete from player where playerId=#{playerId}
+	</delete>
+	<update id="updatePlayer" parameterType="com.xtdx.pojo.Player">
+		<trim prefix="update player set" suffixOverrides="," suffix="where playerId=#{playerId}">
+	        playername=#{playername},state=#{state},num=#{num},dateOfBirth=#{dateOfBirth},sex=#{sex},
+	       <if test="picAddress!=null">
+			picAddress=#{picAddress},
+		   </if>
+		   <if test="smallImg!=null">
+			smallImg=#{smallImg},
+		   </if>
+	</trim>	
+	</update>
+	<select id="getPlayers" resultType="com.xtdx.pojo.Player">
+		SELECT * FROM player
+	</select>
+	
+	<select id="getPlayerNum" resultType="int"><!-- 返回选手总数 -->
+		SELECT COUNT(*) FROM player
+	</select>
+	
+	<update id="updatePlayerNum" parameterType="int"><!-- 使选手轮数+1 -->
+		update player
+		set num=num+1
+		where playerId=#{playerId}
+	</update>
+	
+	<select id="getPlayerNumMin" resultType="int"><!-- 获得当前比赛的轮数 -->
+		select num from player order by num asc limit 0,1
+	</select>
+	
+	<select id="byNumGetPlayer" parameterType="int" resultType="com.xtdx.pojo.Player"><!-- 用Num找选手信息 -->
+		select * from player where num=#{num} and state=0
+	</select>
+	
+	<select id="getPlayerByPlayerId" parameterType="int" resultType="com.xtdx.pojo.Player"><!-- 用Num找选手信息 -->
+		select * from player where playerId=#{playerId}
+	</select>
+	
+	<select id="getPlayerNumByNum" parameterType="int" resultType="int"><!-- 查询数据库sessiontable表，传入拼凑出的nowSession对比是否有相同的字段-->
+		SELECT COUNT(*) FROM player where num=#{num} and state=0
+	</select>
+	
+	<select id="getStateByPlayerId" parameterType="int" resultType="int"><!-- 判断选手是否被淘汰-->
+		SELECT state FROM player where playerId=#{playerId}
+	</select>
+	
+	<update id="updateStateByPlayerId" parameterType="int"><!-- 修改淘汰选手的状态 -->
+		update player
+		set state=1
+		where playerId=#{playerId}
+	</update>
+</mapper>

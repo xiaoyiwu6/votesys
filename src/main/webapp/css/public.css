@@ -1,0 +1,28 @@
+* {
+  margin: 0;
+  padding: 0; }
+
+a {
+  text-decoration: none; }
+
+ul, li, ol {
+  list-style: none; }
+
+body {
+  font-family: Arial,Verdana,"Microsoft YaHei UI",SimSun;
+  font-size: 14px; }
+
+.fl {
+  float: left; }
+
+.fr {
+  float: right; }
+
+.clears {
+  clear: both;
+  height: 0;
+  overflow: hidden;
+  font-size: 0;
+  line-height: 0; }
+
+/*# sourceMappingURL=public.css.map */

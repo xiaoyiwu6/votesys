@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtdx.dao.SessionDao">
+
+	<insert id="addSessionTable" parameterType="com.xtdx.pojo.SessionTable">
+		INSERT INTO sessiontable (wheel,nowSession,winner,votesContrastA,votesContrastB,playerA,playerB)
+		 VALUES (#{wheel},#{nowSession},1,0,0,#{playerA},#{playerB})<!-- winner，votesContrastA和B暂时未填 -->
+	</insert>
+
+
+	<select id="getSessionTable" parameterType="int" resultType="com.xtdx.pojo.SessionTable">
+		SELECT * FROM sessiontable where wheel=#{nowNum}
+	</select>
+	
+	<select id="getgameNow" resultType="int">
+		SELECT COUNT(*) FROM sessiontable where gameNow=1
+	</select>
+	
+	<update id="beginGame" parameterType="String"><!-- 修改比赛状态为1，开始 -->
+		update sessiontable
+		set gameNow=1
+		where nowSession=#{nowSession}
+	</update>
+	
+	<update id="oversGame" parameterType="String"><!-- 修改比赛状态为2，结束 -->
+		update sessiontable
+		set gameNow=2
+		where nowSession=#{nowSession}
+	</update>
+	
+	<select id="getgameNowBynowSession" parameterType="String" resultType="int"><!-- 利用nowSession查询gameNow -->
+		SELECT gameNow FROM sessiontable where nowSession=#{nowSession}
+	</select>
+	
+	<update id="stopsGame" parameterType="String"><!-- 修改比赛状态为3，暂停 -->
+		update sessiontable
+		set gameNow=3
+		where nowSession=#{nowSession}
+	</update>
+	
+	<select id="getWhetherTheEntry" parameterType="com.xtdx.pojo.Player" resultType="int"><!-- 利用选手id和参赛场数查询他是否参赛 -->
+		SELECT COUNT(*) FROM sessiontable where wheel=#{num}+1 and (playerA=#{playerId} or playerB=#{playerId})
+	</select>
+	
+	<select id="getNowField" parameterType="int" resultType="int"><!-- 查询现在本轮已有几场比赛 -->
+		SELECT COUNT(*) FROM sessiontable where wheel=#{wheel}
+	</select>
+	
+	<select id="nowSessionRepeat" parameterType="String" resultType="int"><!-- 查询数据库sessiontable表，传入拼凑出的nowSession对比是否有相同的字段-->
+		SELECT COUNT(*) FROM sessiontable where nowSession=#{nowSession}
+	</select>
+	
+	<select id="queryNowWheel" resultType="int"><!-- 查询当前比赛场次，未用-->
+		select wheel from sessiontable order by wheel asc limit 0,1
+	</select>
+	
+	<select id="getValueAByNowSession"  parameterType="String" resultType="int"><!-- 查询选手A票数-->
+		select COUNT(*) from singlecount where value=0 and nowSession=#{nowSession}
+	</select>
+	
+	<select id="getValueBByNowSession"  parameterType="String" resultType="int"><!-- 查询选手B票数-->
+		select COUNT(*) from singlecount where value=1 and nowSession=#{nowSession}
+	</select>
+	
+	<update id="updateVoteAndWinner" parameterType="com.xtdx.pojo.SessionTable"><!--插入票数和winner -->
+		update sessiontable
+		set winner=#{winner},
+		votesContrastA=#{votesContrastA},
+		votesContrastB=#{votesContrastB}
+		where nowSession=#{nowSession}
+	</update>
+	
+	<select id="getSessionTableByNowSession" parameterType="String" resultType="com.xtdx.pojo.SessionTable"><!-- 查询数据库sessiontable表，传入nowSession-->
+		SELECT * FROM sessiontable where nowSession=#{nowSession}
+	</select>
+	
+	<select id="getAllSessionTable" parameterType="int" resultType="com.xtdx.pojo.SessionTable"><!--  查看所有完成的比赛 -->
+		SELECT * FROM sessiontable where gameNow=2
+	</select>
+</mapper>

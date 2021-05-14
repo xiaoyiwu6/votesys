@@ -1,0 +1,49 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+a{
+  text-decoration: none;
+}
+ul,li,ol{
+  list-style: none;
+}
+body{
+  font-family: Arial,Verdana,"Microsoft YaHei UI",SimSun;
+  font-size: 14px;
+  background-image: linear-gradient(to top, rgba(11, 47, 133, 1) 10%, rgba(159, 126, 196, 1) 40%, rgba(45, 51, 165, 1) 100%);
+}
+.fl{
+  float: left;
+}
+.fr{
+  float: right;
+}
+.clears{
+  clear: both;
+  height: 0;
+  overflow: hidden;
+  font-size: 0;
+  line-height: 0;
+}
+
+@keyframes showleft {
+  0%{
+    opacity:0;
+    margin-left:-100px;
+  }
+  100%{
+    opacity:1;
+    margin-left: 0px;
+  }
+}
+@keyframes showright {
+  0%{
+    opacity:0;
+    margin-right:-100px;
+  }
+  100%{
+    opacity:1;
+    margin-right: 0px;
+  }
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtdx.dao.VoteDao">
+	<select id="getNowSession" parameterType="int" resultType="String">
+		select nowSession from sessiontable where gameNow=#{gameNow}
+	</select>
+	<select id="getPkSession" parameterType="int" resultType="sessionTable">
+		select * from sessiontable where gameNow=#{gameNow}
+	</select>
+	<select id="getPkPlayers" parameterType="sessionTable"
+	resultType="player">
+		select * from player where  playerId in(#{playerA},#{playerB})
+	</select>
+	<insert id="addTicket" parameterType="singleCount">
+		insert into singleCount(userId,nowSession,value)
+		values(#{userId},#{nowSession},#{value})
+	</insert>
+	<select id="checkUserAddTicket" parameterType="singleCount" resultType="int">
+		select count(*) from singleCount where userId=#{userId} and nowSession=#{nowSession}
+	</select>
+	<select id="getVotesContrastA" parameterType="String" resultType="int">
+		select count(*) from singlecount where value=0 and nowSession=#{nowSession}
+	</select>
+	<select id="getVotesContrastB" parameterType="String" resultType="int">
+		select count(*) from singlecount where value=1 and nowSession=#{nowSession}
+	</select>
+	<update id="updateVotesContrast" parameterType="sessionTable">
+		update sessiontable set votesContrastA=#{votesContrastA},votesContrastB=#{votesContrastB}
+		where nowSession=#{nowSession}
+	</update>
+	<select id="getUserTypeByUserId" parameterType="int" resultType="int">
+		select type from user where userId=#{userId}
+	</select>
+</mapper>

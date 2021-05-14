@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xtdx.dao.UserDao">
+<!--	注册，将用户插入到数据库-->
+<!--    <insert id="addUser" parameterType="com.xtdx.pojo.User">-->
+<!--        INSERT INTO `VOTE`.`user` (-->
+<!--        `account`,-->
+<!--        `password`,-->
+<!--        `level`-->
+<!--        )-->
+<!--        VALUES-->
+<!--        (-->
+<!--        #{account},-->
+<!--        #{password},-->
+<!--        0-->
+<!--        );-->
+<!--    </insert>-->
+
+            <!--	根据用户账户得到User-->
+    <select id="getUserByAccount" parameterType="String" resultType="com.xtdx.pojo.User">
+        SELECT * FROM user WHERE account=#{account};
+    </select>
+</mapper>
