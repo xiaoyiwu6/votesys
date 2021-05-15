@@ -10,7 +10,14 @@ import com.xtdx.pojo.User;
 public interface UserDao {
 	public User getUser(String keywords);
 
-	public List<User> getUsers();
+	/**
+	 * 获取所有选民
+	 *     <select id="getAllUsers" resultType="com.xtdx.pojo.User">
+	 *         SELECT * FROM USER WHERE LEVEL=0;
+	 *     </select>
+	 * @return 用户队列
+	 */
+	public List<User> getAllUsers();
 
 	public boolean deleteUser(int userId);
 
@@ -38,4 +45,5 @@ public interface UserDao {
 	 * 	</select>
 	 */
 	public User getUserByAccount(String account);
+
 }

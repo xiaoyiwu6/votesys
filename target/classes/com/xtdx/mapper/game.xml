@@ -79,4 +79,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="getAllSessionTable" parameterType="int" resultType="com.xtdx.pojo.SessionTable"><!--  查看所有完成的比赛 -->
 		SELECT * FROM sessiontable where gameNow=2
 	</select>
+
+	<!-- 获取当前session下的所有候选人 -->
+	<select id="getAllPlayersBySessionId" parameterType="int" resultType="com.xtdx.pojo.Player">
+		SELECT * FROM sessplayer WHERE sessionId=${sessionId};
+	</select>
+
+	<!-- 获取当前投票活动 -->
+	<select id="getCurSession" resultType="com.xtdx.pojo.Session">
+		SELECT * FROM SESSION WHERE state=1;
+	</select>
+
+	<!-- 获取所有session-->
+	<select id="getAllSession" resultType="com.xtdx.pojo.Session">
+		SELECT * FROM SESSION;
+	</select>
 </mapper>

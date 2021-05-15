@@ -19,7 +19,6 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta name="description" content="">
-	<meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
 	<meta name="generator" content="Jekyll v4.1.1">
 	<title>WXY政务登录</title>
 
@@ -91,10 +90,10 @@
 </script>
 <form class="form-signin"  name="myForm" action="${APP_PATH}/submit.do">
 	<img class="mb-4" src="${pageContext.request.contextPath}/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-	<c:if test="${empty sessionScope.curUser}">
+	<c:if test="${!empty deal}">
 		<h1 class="h3 mb-3 font-weight-normal">Wrong account or password.Please login again.</h1>
 	</c:if>
-	<c:if test="${!empty sessionScope.curUser}">
+	<c:if test="${empty deal}">
 		<h1 class="h3 mb-3 font-weight-normal">Please login</h1>
 	</c:if>
 	<label for="inputAccount" class="sr-only">Account</label>
@@ -107,7 +106,7 @@
 			<input type="checkbox" value="remember-me"> Remember me
 		</label>
 	</div>
-	<button class="btn btn-lg btn-primary btn-block" onclick="checkForm(this.form)" type="buttom">Sign in</button>
+	<button class="btn btn-lg btn-primary btn-block" onclick="checkForm(this.form)" type="button">Sign in</button>
 	<p class="mt-5 mb-3 text-muted">&copy; 2017-2020</p>
 </form>
 </body>

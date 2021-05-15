@@ -71,5 +71,18 @@ public class Player {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Player{" +
+				"playerId=" + playerId +
+				", playername='" + playername + '\'' +
+				", state=" + state +
+				", num=" + num +
+				", picAddress='" + picAddress + '\'' +
+				", dateOfBirth='" + dateOfBirth + '\'' +
+				", smallImg='" + smallImg + '\'' +
+				", sex=" + sex +
+				'}';
+	}
 }

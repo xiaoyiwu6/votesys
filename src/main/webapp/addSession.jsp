@@ -1,5 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" isELIgnored="false" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+
+<%
+    pageContext.setAttribute("APP_PATH", request.getContextPath());
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -32,14 +38,34 @@
 添加比赛列表
 <form id="form">
 		<table>
-			<tr>
-				<td>参赛选手A的id</td>
-				<td><input type="text" id="playerA" name="playerA"/></td>
-			</tr>
-			<tr>
-				<td>参赛选手B的id</td>
-				<td><input type="text" id="playerB" name="playerB"/></td>
-			</tr>
+            <c:forEach items="${players}" var="list">
+                <tr>
+                    <td>${list.playerId}</td>
+                    <td>${list.playername}</td>
+                    <c:if test="${list.state==0}">
+                        <td>未淘汰</td>
+                    </c:if>
+                    <c:if test="${list.state==1}">
+                        <td>淘汰</td>
+                    </c:if>
+                    <td>${list.num}</td>
+                    <td>
+                        <img src="${list.picAddress}" width="200">
+                    </td>
+                    <td>
+                        <img src="${list.smallImg}"  width="100">
+                    </td>
+                    <td>${list.dateOfBirth}</td>
+                    <c:if test="${list.sex==0}">
+                        <td>男</td>
+                    </c:if>
+                    <c:if test="${list.sex==1}">
+                        <td>女</td>
+                    </c:if>
+                    <td><a href="${APP_PATH}/editPlayer/${list.playerId}.do">编辑</a></td>
+                    <td><a onclick="delPlayer(${list.playerId})" href="#">删除</a></td>
+                </tr>
+            </c:forEach>
 			<tr>
 				<td colspan="2" style="text-align: center"><input type="button"
 					 value="添加场次" onclick="add()"/></td>

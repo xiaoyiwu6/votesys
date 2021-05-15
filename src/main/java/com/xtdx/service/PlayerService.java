@@ -70,4 +70,5 @@ public class PlayerService {
 	public boolean updateStateByPlayerId(int playerId) {//修改被淘汰选手状态
 		return playerDao.updateStateByPlayerId(playerId);
 	}
+
 }

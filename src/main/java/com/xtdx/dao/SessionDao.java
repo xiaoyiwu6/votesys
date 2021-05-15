@@ -2,6 +2,7 @@ package com.xtdx.dao;
 
 import java.util.List;
 
+import com.xtdx.pojo.Session;
 import org.springframework.stereotype.Repository;
 
 import com.xtdx.pojo.Player;
@@ -24,4 +25,31 @@ public interface SessionDao {
 	public SessionTable getSessionTableByNowSession(String nowSession);//查询sessiontable表，传入sessiontable
 	public boolean updateVoteAndWinner(SessionTable sessionTable);//插入票数和winner
 	public List<SessionTable> getAllSessionTable();//查看完成比赛的所有信息
+
+	/**
+	 *  获取当前session下的所有候选人
+	 * 	<select id="getAllPlayersBySessionId" parameterType="int" resultType="com.xtdx.pojo.Player">
+	 * 		SELECT * FROM sessplayer WHERE sessionId=${sessionId};
+	 * 	</select>
+	 * @param sessionId
+	 * @return 候选人队列
+	 */
+	public List<Player> getAllPlayersBySessionId(int sessionId);
+
+	/**
+	 *  获取当前投票活动
+	 * 	<select id="getCurSession" resultType="com.xtdx.pojo.session">
+	 * 		SELECT * FROM SESSION WHERE state=1;
+	 * 	</select>
+	 * @return  当前投票活动
+	 */
+	public Session getCurSession();
+
+	/**
+	 *  获取所有session
+	 * 	<select id="getAllSession" resultType="com.xtdx.pojo.Session">
+	 * 		SELECT * FROM SESSION;
+	 * 	</select>
+	 */
+	public List<Session> getAllSession();
 }

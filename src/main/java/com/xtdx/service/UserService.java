@@ -17,8 +17,8 @@ public class UserService {
 		return userDao.getUser(keywords);
 	}
 
-	public List<User> getUsers(){
-		return userDao.getUsers();
+	public List<User> getAllUsers(){
+		return userDao.getAllUsers();
 	}
 
 	public boolean deleteUser(int userId) {

@@ -11,19 +11,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.xtdx.pojo.User;
 import com.xtdx.service.*;
 
+import javax.servlet.http.HttpSession;
+
 
 //用户控制
 @Controller
 public class UserController {
 	@Autowired
 	private UserService userService;
-	
-//	@RequestMapping("/userManagement")
-//	public String userManagement() {
-//		return "userManagement";
-//	}
-//	
-	
+
 	@RequestMapping("/addUser")
 	public String addUser() {
 		return "RandomData";
@@ -31,9 +27,16 @@ public class UserController {
 	@RequestMapping("/userManagement")
 	public String userList(Model model){
 		//获取员工数据
-		List<User> list= userService.getUsers();
+		List<User> list= userService.getAllUsers();
 		model.addAttribute("users",list);
 		return "userManagement";
+	}
+
+	//登出
+	@RequestMapping("/signOut")
+	public String signOut(HttpSession session){
+		session.removeAttribute("curUser");
+		return "redirect:index.do";
 	}
 	
 	@RequestMapping("/user/del")

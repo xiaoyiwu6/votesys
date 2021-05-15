@@ -1,13 +1,19 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" isELIgnored="false" contentType="text/html; charset=UTF-8"
+		 pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+
+<%
+	pageContext.setAttribute("APP_PATH", request.getContextPath());
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="multipart/form-data; text/html; charset=UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/publicNav.css">
-<script src="${pageContext.request.contextPath}/plugins/jquery-1.12.4.js"></script>
+<link rel="stylesheet" href="${APP_PATH}/css/publicNav.css">
+<script src="${APP_PATH}/script/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
 $(function(){
 	$("#state").val(${player.state}?1:0);
@@ -23,25 +29,25 @@ $(function(){
 </script>
 <script type="text/javascript">
 function edit() {
-	var url = "${pageContext.request.contextPath}/editPlayer/update";
-	var param = new FormData($("#form")[0]);
-	console.log(param);
-	$.ajax({  
-        url:url,  
-        type:"post",  
-        data:param,  
-        processData:false,  
-        contentType:false,  
-        success:function(data) {
-        	if(data=="1"){
-				location.href="${pageContext.request.contextPath}/PlayerManagement.do"
-			}else{
-				alert("修改失败!")
+	var url = "${APP_PATH}/editPlayer/update.do";
+	var formData = new FormData($("#form")[0]);
+	$.ajax({
+		url: url,
+		data: formData,
+		async: true,
+		type: "post",
+		processData:false,
+		contentType:false,
+		success: function (data) {
+			if(data=="1"){
+				console.log("over");
+				location.href="${APP_PATH}/PlayerManagement.do";
 			}
-        },error:function(data) {  
-              
-        }  
-    });  
+		}, error: function (data) {
+
+		}
+	})
+
 }
 </script>  
 </head>
@@ -52,20 +58,20 @@ function edit() {
                 <a href="back">首页</a>
             </li>
             <li>
-                <a href="${pageContext.request.contextPath}/userManagement.do">用户管理</a>
+                <a href="${APP_PATH}/userManagement.do">用户管理</a>
             </li>
             <li>
-                <a href="${pageContext.request.contextPath}/playerContent.do">PK管理</a>
+                <a href="${APP_PATH}/playerContent.do">PK管理</a>
             </li>
             <li>
-                <a href="${pageContext.request.contextPath}/PlayerManagement.do">选手管理</a>
+                <a href="${APP_PATH}/PlayerManagement.do">选手管理</a>
             </li>
             <li>
                 <a href="#">更多</a>
             </li>
         </ul>
     </nav>
-	<form id="form">
+	<form id="form" enctype="multipart/form-data" method="post">
 		<table>
 			<tr>
 				<td>选手姓名：</td>

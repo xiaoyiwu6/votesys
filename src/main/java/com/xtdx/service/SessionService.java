@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.xtdx.dao.SessionDao;
 import com.xtdx.pojo.Player;
+import com.xtdx.pojo.Session;
 import com.xtdx.pojo.SessionTable;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,4 +72,10 @@ public class SessionService {
 	public List<SessionTable> getAllSessionTable(){//查看完成比赛的所有信息
 		return sessionDao.getAllSessionTable();
 	}
+
+	public List<Player> getAllPlayersBySessionId(int sessionId){return sessionDao.getAllPlayersBySessionId(sessionId);}
+
+	public Session getCurSession() {return sessionDao.getCurSession();}
+
+	public List<Session> getAllSession(){return sessionDao.getAllSession();}
 }

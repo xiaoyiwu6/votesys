@@ -1,12 +1,17 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
- <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page language="java" isELIgnored="false" contentType="text/html; charset=UTF-8"
+		 pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+
+<%
+	pageContext.setAttribute("APP_PATH", request.getContextPath());
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/publicNav.css">
+<link rel="stylesheet" href="${APP_PATH}/css/publicNav.css">
 <style type="text/css"> 
        .table {
             border: 1px solid #ddd;
@@ -23,13 +28,13 @@
             background-color: #fff;
         }
     </style>
-<script type="text/javascript" src="${pageContext.request.contextPath}/plugins/jquery-1.12.4.js"></script>
+<script type="text/javascript" src="${APP_PATH}/plugins/jquery-1.12.4.js"></script>
 <script>
 function del(id){
 	var result=confirm("确认删除?");
 	if(result){
 		//开始发送异步请求
-		var url="del";
+		var url="${APP_PATH}/delPlayer.do";
 		var param ={playerId:id};
 		$.post(url, param, function(data) {
 			if(data=="1"){
@@ -47,16 +52,16 @@ function del(id){
 <nav>
         <ul>
             <li>
-                <a href="back">首页</a>
+                <a href="${APP_PATH}/index.do">首页</a>
             </li>
             <li>
-                <a href="${pageContext.request.contextPath}/userManagement.do">用户管理</a>
+                <a href="${APP_PATH}/userManagement.do">用户管理</a>
             </li>
             <li>
-                <a href="${pageContext.request.contextPath}/playerContent.do">PK管理</a>
+                <a href="${APP_PATH}/playerContent.do">PK管理</a>
             </li>
             <li>
-                <a href="${pageContext.request.contextPath}/PlayerManagement.do">选手管理</a>
+                <a href="${APP_PATH}/PlayerManagement.do">选手管理</a>
             </li>
             <li>
                 <a href="#">更多</a>
@@ -101,7 +106,7 @@ function del(id){
     			<c:if test="${list.sex==1}">
     				<td>女</td>
     			</c:if>
-    			<td><a href="editPlayer/${list.playerId}">编辑</a></td>
+    			<td><a href="${APP_PATH}/editPlayer/${list.playerId}.do">编辑</a></td>
     			<td><a onclick="delPlayer(${list.playerId})" href="#">删除</a></td>
     		</tr>
     	</c:forEach>

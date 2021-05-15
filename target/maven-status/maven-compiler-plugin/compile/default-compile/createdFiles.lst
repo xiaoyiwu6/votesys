@@ -18,5 +18,6 @@ com\xtdx\encryption\ECG.class
 com\xtdx\controller\VoteController.class
 com\xtdx\dao\UserDao.class
 com\xtdx\service\LoginService.class
+com\xtdx\pojo\Session.class
 com\xtdx\dao\PlayerDao.class
 com\xtdx\dao\SessionDao.class

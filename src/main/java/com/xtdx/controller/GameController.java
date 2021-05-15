@@ -1,8 +1,8 @@
 package com.xtdx.controller;
 
 import java.util.List;
-import java.util.Random;
 
+import com.xtdx.pojo.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,167 +22,15 @@ public class GameController {
 	
 	@Autowired
 	private SessionService sessionService;
-	
+
+	//投票活动管理页
 	@RequestMapping("/playerContent")
-	public String userList(){
+	public String userList(Model model){
+		List<Session> allSession = sessionService.getAllSession();
+		model.addAttribute("allSession",allSession);
 		return "games";
 	}
 	
-	@RequestMapping("/generateTheGameTable")
-	public String sessiontables(Model model) {
-		//获取选手信息并保存在session中
-				//List<player> list= playerService.getPlayers();
-				//model.addAttribute("players",list);
-				//获取选手总数
-				//int num=playerService.getPlayerNum();
-				
-				//获取当前比赛的轮数
-				int nowNum=playerService.getPlayerNumMin();
-				//根据轮数查询本轮选手总数
-				int num=playerService.getPlayerNumByNum(nowNum);
-				
-				//进行本轮选手的匹配
-				if(num%2==1) {
-					//随机到的一位选手进行轮空晋级
-					//生成随机数,a,b为随机选出的选手
-					Random a=new Random();
-					int b;
-					b=a.nextInt(num)+1;
-					//System.out.println(a+":"+b);
-					//int a=(int)(Math.random()*num);
-					
-					//寻找所有轮数为nowNum,且为被淘汰的选手
-					List<Player> liss=playerService.byNumGetPlayer(nowNum);
-					//利用liss生成存储选手id的数组，然后用b在数组中取id让选出的选手晋级
-					int[] nowIds=new int[num];
-					int f=0;
-					for (Player pla : liss) {
-//						System.out.println(pla.getPlayername()+"sss");
-						nowIds[f]=pla.getPlayerId();
-						f++;
-						}
-//					System.out.println(nowIds[b]);
-					boolean s=playerService.updatePlayerNum(nowIds[b]);
-					//创建一个存储本轮选手id的数组
-					int[] nowId=new int[num];
-					if(s==true) {
-						//获取当前比赛的轮数
-						//int nowNum=playerService.getPlayerNumMin();
-						//寻找所有轮数为nowNum的选手
-						List<Player> lis=playerService.byNumGetPlayer(nowNum);
-						//将选手信息保存到session中
-						//model.addAttribute("players",lis);
-						
-						//为nowId存入选手id
-						int j=0;
-						for (Player pla : lis) {
-//							System.out.println(pla.getPlayername()+"sss");
-							nowId[j]=pla.getPlayerId();
-							j++;
-							}
-						
-//						for(int k=0;k<nowId.length;k++) {
-//							System.out.println(nowId[k]);
-//						}
-						//拼凑nowSession字段
-						for(int g=0;g<nowId.length/2;g++) {
-							String nowSess;
-							nowSess=Integer.toString(nowNum+1);
-							if(g<10) {
-								nowSess+="0";
-								nowSess+="0";
-								nowSess+=Integer.toString(g+1);
-							}else if(g>=10&&g<100) {
-								nowSess+="0";
-								nowSess+=Integer.toString(g/10);
-								nowSess+=Integer.toString(g%10+1);
-							}else if(g>=100&&g<999) {
-								nowSess+=Integer.toString(g/100);
-								nowSess+=Integer.toString((g%100)/10);
-								nowSess+=Integer.toString(g%10+1);
-							}else {
-								System.out.println("请扩充数据库字段nowSession");
-							}
-							//查询数据库sessiontable表，传入拼凑出的nowSession对比是否有相同的字段
-							int nowSessionRepeat=sessionService.nowSessionRepeat(nowSess);
-							if(nowSessionRepeat>0) {
-								return "games";
-							}else {
-								//创建sessionTable对象，调用addsessionTable方法
-								SessionTable ses=new SessionTable();
-								ses.setWheel(nowNum+1);
-								ses.setPlayerA(nowId[g*2]);
-								ses.setPlayerB(nowId[g*2+1]);
-								ses.setNowSession(nowSess);
-								sessionService.addSessionTable(ses);
-							}
-						}
-						//读取sessiontable表，将sessiontable表中的内容存储到session中
-						List<SessionTable> lists=sessionService.getSessionTable(nowNum+1);
-						model.addAttribute("sessions",lists);
-						return "games";
-					}else {
-						return "games";
-					}
-				}else {
-					//寻找所有轮数为nowNum且未被淘汰的选手
-					List<Player> lis=playerService.byNumGetPlayer(nowNum);
-					//将选手信息保存到session中
-//					model.addAttribute("players",lis);
-					
-					//创建一个存储本轮选手id的数组
-					int[] nowIds=new int[num];
-					
-					//为nowId存入选手id
-					int j=0;
-					for (Player pla : lis) {
-						//System.out.println(pla.getPlayername()+":"+pla.getPlayerId()+":"+j);
-						nowIds[j]=pla.getPlayerId();
-						j++;
-						}
-					
-//					for(int k=0;k<nowId.length;k++) {
-//						System.out.println(nowId[k]);
-//					}
-					//拼凑nowSession字段
-					for(int g=0;g<nowIds.length/2;g++) {
-						String nowSess;
-						nowSess=Integer.toString(nowNum+1);
-						if(g<10) {
-							nowSess+="0";
-							nowSess+="0";
-							nowSess+=Integer.toString(g+1);
-						}else if(g>=10&&g<100) {
-							nowSess+="0";
-							nowSess+=Integer.toString(g/10);
-							nowSess+=Integer.toString(g%10+1);
-						}else if(g>=100&&g<999) {
-							nowSess+=Integer.toString(g/100);
-							nowSess+=Integer.toString((g%100)/10);
-							nowSess+=Integer.toString(g%10+1);
-						}else {
-							System.out.println("请扩充数据库字段nowSession");
-						}
-						//查询数据库sessiontable表，传入拼凑出的nowSession对比是否有相同的字段
-						int nowSessionRepeat=sessionService.nowSessionRepeat(nowSess);
-						if(nowSessionRepeat>0) {
-							return "games";
-						}else {
-							//创建sessionTable对象，调用addsessionTable方法
-							SessionTable ses=new SessionTable();
-							ses.setWheel(nowNum+1);
-							ses.setPlayerA(nowIds[g*2]);
-							ses.setPlayerB(nowIds[g*2+1]);
-							ses.setNowSession(nowSess);
-							sessionService.addSessionTable(ses);
-						}
-					}
-					//读取sessiontable表，将sessiontable表中的内容存储到session中
-					List<SessionTable> lists=sessionService.getSessionTable(nowNum+1);
-					model.addAttribute("sessions",lists);
-					return "games";
-				}
-	}
 	@RequestMapping("/queryGameTable")
 	public String queryGameTable(Model model) {
 		int nowNum=playerService.getPlayerNumMin();
@@ -304,7 +152,11 @@ public class GameController {
 	}
 	
 	@RequestMapping("/addSession")//跳转到addSession页面
-	public String addSession() {
+	public String addSession(Model model) {
+		Session curSession = sessionService.getCurSession();
+		List<Player> players = sessionService.getAllPlayersBySessionId(curSession.getSessionId());
+		model.addAttribute("players",players);
+
 		return "addSession";
 	}
 	
