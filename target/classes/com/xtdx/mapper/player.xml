@@ -25,7 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		   <if test="smallImg!=null">
 			smallImg=#{smallImg},
 		   </if>
-	</trim>	
+		</trim>
 	</update>
 	<select id="getPlayers" resultType="com.xtdx.pojo.Player">
 		SELECT * FROM player

@@ -2,13 +2,61 @@ package com.xtdx.pojo;
 
 public class Player {
 	private int playerId;
-	private String playername;
+	private String playerName;
 	private int state;
 	private int num;
 	private String picAddress;
 	private String dateOfBirth;
 	private String smallImg;
 	private int sex;
+	private String slogan;
+
+	@Override
+	public String toString() {
+		return "Player{" +
+				"playerId=" + playerId +
+				", playerName='" + playerName + '\'' +
+				", state=" + state +
+				", num=" + num +
+				", picAddress='" + picAddress + '\'' +
+				", dateOfBirth='" + dateOfBirth + '\'' +
+				", smallImg='" + smallImg + '\'' +
+				", sex=" + sex +
+				", slogan='" + slogan + '\'' +
+				", info='" + info + '\'' +
+				'}';
+	}
+
+	public String getSlogan() {
+		return slogan;
+	}
+
+	public void setSlogan(String slogan) {
+		this.slogan = slogan;
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+	public Player(int playerId, String playerName, int state, int num, String picAddress, String dateOfBirth, String smallImg, int sex, String slogan, String info) {
+		this.playerId = playerId;
+		this.playerName = playerName;
+		this.state = state;
+		this.num = num;
+		this.picAddress = picAddress;
+		this.dateOfBirth = dateOfBirth;
+		this.smallImg = smallImg;
+		this.sex = sex;
+		this.slogan = slogan;
+		this.info = info;
+	}
+
+	private String info;
 	public String getSmallImg() {
 		return smallImg;
 	}
@@ -21,11 +69,11 @@ public class Player {
 	public void setPlayerId(int playerId) {
 		this.playerId = playerId;
 	}
-	public String getPlayername() {
-		return playername;
+	public String getPlayerName() {
+		return playerName;
 	}
-	public void setPlayername(String playername) {
-		this.playername = playername;
+	public void setPlayerName(String playerName) {
+		this.playerName = playerName;
 	}
 	public int getState() {
 		return state;
@@ -57,32 +105,9 @@ public class Player {
 	public void setSex(int sex) {
 		this.sex = sex;
 	}
-	public Player(int playerId, String playername, int state, int num, String picAddress, String dateOfBirth, int sex) {
-		super();
-		this.playerId = playerId;
-		this.playername = playername;
-		this.state = state;
-		this.num = num;
-		this.picAddress = picAddress;
-		this.dateOfBirth = dateOfBirth;
-		this.sex = sex;
-	}
 	public Player() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public String toString() {
-		return "Player{" +
-				"playerId=" + playerId +
-				", playername='" + playername + '\'' +
-				", state=" + state +
-				", num=" + num +
-				", picAddress='" + picAddress + '\'' +
-				", dateOfBirth='" + dateOfBirth + '\'' +
-				", smallImg='" + smallImg + '\'' +
-				", sex=" + sex +
-				'}';
-	}
 }

@@ -1,8 +1,11 @@
 package com.xtdx.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
+import com.xtdx.pojo.PlayerBindCount;
 import com.xtdx.pojo.Session;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.xtdx.pojo.Player;
@@ -52,4 +55,111 @@ public interface SessionDao {
 	 * 	</select>
 	 */
 	public List<Session> getAllSession();
+
+	/**
+	 * 插入新的session
+	 * 	<insert id="insertSession" parameterType="com.xtdx.pojo.Session">
+	 * 		INSERT INTO `VOTE`.`session` (
+	 * 		  `sessionName`,
+	 * 		  `state`,
+	 * 		  `create`,
+	 * 		)
+	 * 		VALUES
+	 * 		  (
+	 * 			${sessionName},
+	 * 			0,
+	 * 			${create}
+	 * 		  );
+	 *
+	 * 	</insert>
+	 */
+	public int insertSession(Session session);
+
+	/**
+	 * 查找没加入当前投票的候选人
+	 * 	<select id="getAbsentPlayersBySessionId" parameterType="int" resultType="com.xtdx.pojo.Player">
+	 * 		SELECT * FROM player WHERE playerId NOT IN (SELECT playerId FROM sessplayer WHERE sessionId=${sessionId});
+	 * 	</select>
+	 */
+	public List<Player> getAbsentPlayersBySessionId(@Param("sessionId") int sessionId);
+
+	/**
+	 * 查找已加入当前投票的候选人
+	 * 	<select id="getPresentPlayersBySessionId" parameterType="int" resultType="com.xtdx.pojo.Player">
+	 * 		SELECT * FROM player WHERE playerId IN (SELECT playerId FROM sessplayer WHERE sessionId=${sessionId});
+	 * 	</select>
+	 */
+	public List<Player> getPresentPlayersBySessionId(@Param("sessionId") int sessionId);
+
+	/**
+	 * 把候选人加入到当前投票
+	 * 	<insert id="insertPlayerToSession" parameterType="hashmap">
+	 * 		INSERT INTO `VOTE`.`sessplayer` (`sessionId`, `playerId`, `count`)
+	 * 		VALUES
+	 * 		  (${sessionId}, ${playerId}, 0);
+	 *
+	 * 	</insert>
+	 */
+	public int insertPlayerToSession(HashMap map);
+
+	/**
+	 * 查询正在进行的投票的候选人信息
+	 * 	<select id="getAbsentPlayersFromCurSession" parameterType="int" resultType="com.xtdx.pojo.Player">
+	 * 		SELECT * FROM player WHERE playerId  IN (SELECT playerId FROM sessplayer,`session` WHERE sessplayer.sessionId=${sessionId} AND state=1);
+	 * 	</select>
+	 */
+	public List<Player> getAbsentPlayersFromCurSession(@Param("sessionId") int sessionId);
+
+	/**
+	 * 投票
+	 * 	<insert id="votePlayer">
+	 * 		INSERT INTO `VOTE`.`sesscount` (
+	 * 		  `sessionId`,
+	 * 		  `playerId`,
+	 * 		  `userId`,
+	 * 		  `ballot`
+	 * 		)
+	 * 		VALUES
+	 * 		  (
+	 * 			${sessionId},
+	 * 			${playerId},
+	 * 			${userId},
+	 * 			${ballot}
+	 * 		  );
+	 * 	</insert>
+	 */
+	public int votePlayer(@Param("sessionId") int sessionId,@Param("playerId") int playerId,@Param("userId") int userId,@Param("ballot") String ballot);
+
+	/**
+	 * 投票计数
+	 * 	<update id="updateCount" parameterType="hashmap">
+	 * 		UPDATE
+	 * 		  `VOTE`.`sessplayer`
+	 * 		SET
+	 * 		  `count` = 'count'+1
+	 * 		WHERE `sessionId` = ${sessionId}
+	 * 		  AND `playerId` = ${playerId};
+	 * 	</update>
+	 */
+	public int updateCount(HashMap map);
+
+	/**
+	 * 查询票数
+	 * 	<select id="selectCount" parameterType="hashmap" resultType="int">
+	 * 		SELECT count FROM sessplayer
+	 * 		WHERE sessionId=${sessionId}
+	 * 		AND playerId=${playerId};
+	 * 	</select>
+	 */
+	public int selectCount(HashMap map);
+
+	/**
+	 *  联查查询，用于index页
+	 * 	<select id="selectPlayerBindCount" parameterType="hashmap" resultMap="PBCResult">
+	 * 		SELECT * FROM sessplayer INNER JOIN player
+	 * 		WHERE sessionId=${sessionId}
+	 * 		AND playerId=${player.playerId}
+	 * 	</select>
+	 */
+	public List<PlayerBindCount> selectPlayerBindCount(@Param("sessionId") int sessionId);
 }

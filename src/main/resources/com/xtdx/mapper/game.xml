@@ -90,8 +90,99 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT * FROM SESSION WHERE state=1;
 	</select>
 
-	<!-- 获取所有session-->
+	<!-- 获取所有session -->
 	<select id="getAllSession" resultType="com.xtdx.pojo.Session">
 		SELECT * FROM SESSION;
+	</select>
+
+	<!-- 插入新的session -->
+	<insert id="insertSession" parameterType="com.xtdx.pojo.Session">
+		INSERT INTO `VOTE`.`session` (
+		  `sessionName`,
+		  `state`,
+		  `create`,
+		)
+		VALUES
+		  (
+			'session',
+			0,
+			${create}
+		  );
+
+	</insert>
+	<!-- 查找没加入当前投票的候选人 -->
+	<select id="getAbsentPlayersBySessionId" parameterType="int" resultType="com.xtdx.pojo.Player">
+		SELECT * FROM player WHERE playerId NOT IN (SELECT playerId FROM sessplayer WHERE sessionId=${sessionId});
+	</select>
+	<!-- 查找已加入当前投票的候选人 -->
+	<select id="getPresentPlayersBySessionId" parameterType="int" resultType="com.xtdx.pojo.Player">
+		SELECT * FROM player WHERE playerId IN (SELECT playerId FROM sessplayer WHERE sessionId=${sessionId});
+	</select>
+	<!-- 把候选人加入到当前投票 -->
+	<insert id="insertPlayerToSession" parameterType="hashmap">
+		INSERT INTO `VOTE`.`sessplayer` (`sessionId`, `playerId`, `count`)
+		VALUES
+		  (${sessionId}, ${playerId}, 0);
+
+	</insert>
+
+	<!-- 查询正在进行的投票的候选人信息 -->
+	<select id="getAbsentPlayersFromCurSession" parameterType="int" resultType="com.xtdx.pojo.Player">
+		SELECT * FROM player WHERE playerId  IN (SELECT playerId FROM sessplayer,`session` WHERE sessplayer.sessionId=${sessionId} AND state=1);
+	</select>
+
+	<!-- 插入票据 -->
+	<insert id="votePlayer">
+		INSERT INTO `VOTE`.`sesscount` (
+		  `sessionId`,
+		  `playerId`,
+		  `userId`,
+		  `ballot`
+		)
+		VALUES
+		  (
+			${sessionId},
+			${playerId},
+			${userId},
+			${ballot}
+		  );
+	</insert>
+	<!-- 投票计数 -->
+	<update id="updateCount" parameterType="hashmap">
+		UPDATE
+		  `VOTE`.`sessplayer`
+		SET
+		  `count` = 'count'+1
+		WHERE `sessionId` = ${sessionId}
+		  AND `playerId` = ${playerId};
+	</update>
+	<!-- 查询票数 -->
+	<select id="selectCount" parameterType="hashmap" resultType="int">
+		SELECT count FROM sessplayer
+		WHERE sessionId=${sessionId}
+		AND playerId=${playerId};
+	</select>
+	
+	<resultMap id="PBCResult" type="com.xtdx.pojo.PlayerBindCount">
+		<id column="sessionId" property="sessionId"></id>
+		<result column="count" property="count"></result>
+		
+		<association property="player"javaType="com.xtdx.pojo.Player" resultMap="playerResult"></association>
+	</resultMap>
+	<resultMap id="playerResult" type="com.xtdx.pojo.Player">
+		<id column="playerId" property="playerId"></id>
+		<result column="playerName" property="playerName"></result>
+		<result column="state" property="state"></result>
+		<result column="num" property="num"></result>
+		<result column="picAddress" property="picAddress"></result>
+		<result column="dateOfBirth" property="dateOfBirth"></result>
+		<result column="smallImg" property="smallImg"></result>
+		<result column="sex" property="sex"></result>
+		<result column="slogan" property="slogan"></result>
+	</resultMap>
+	<!-- 联查查询，用于index页 -->
+	<select id="selectPlayerBindCount" parameterType="int" resultMap="PBCResult">
+		SELECT * FROM sessplayer INNER JOIN player
+		WHERE sessionId=${sessionId};
 	</select>
 </mapper>

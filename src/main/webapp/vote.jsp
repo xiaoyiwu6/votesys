@@ -56,14 +56,14 @@ $(function(){
             <span id="player1"><p id="p1">0</p></span>
             <em>
                 <img src="${players.get(0).picAddress}" height="300" width="256"/>
-                <h>${players.get(0).playername}</h>
+                <h>${players.get(0).playerName}</h>
             </em>
         </ul>
         <ul class="player2">
             <span id="player2"><p id="p2">0</p></span>
             <em>
                 <img src="${players.get(1).picAddress}" height="300" width="256"/>
-                <h>${players.get(1).playername}</h>
+                <h>${players.get(1).playerName}</h>
             </em>
         </ul>
     </div>

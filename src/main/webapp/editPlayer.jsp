@@ -75,7 +75,7 @@ function edit() {
 		<table>
 			<tr>
 				<td>选手姓名：</td>
-				<td><input type="text" id="playerName" name="playerName" value="${player.playername}"/></td>
+				<td><input type="text" id="playerName" name="playerName" value="${player.playerName}"/></td>
 			</tr>
 			<tr>
 				<td>选手状态：</td>

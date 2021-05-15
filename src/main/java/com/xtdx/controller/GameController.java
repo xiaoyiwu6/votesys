@@ -1,18 +1,23 @@
 package com.xtdx.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.SimpleFormatter;
 
 import com.xtdx.pojo.Session;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 
 import com.xtdx.pojo.Player;
 import com.xtdx.pojo.SessionTable;
 import com.xtdx.service.*;
+
+import javax.jws.WebParam;
+
 //比赛控制
 @Controller
 @SessionAttributes("sessions")
@@ -150,79 +155,54 @@ public class GameController {
 			return "0";
 		}
 	}
-	
-	@RequestMapping("/addSession")//跳转到addSession页面
-	public String addSession(Model model) {
-		Session curSession = sessionService.getCurSession();
-		List<Player> players = sessionService.getAllPlayersBySessionId(curSession.getSessionId());
-		model.addAttribute("players",players);
 
+	//创建新活动
+	@RequestMapping("/addSession")
+	public String addSession() {
 		return "addSession";
 	}
-	
-	@RequestMapping("/addSessions")//在addSession页面，添加两选手id进行匹配
+	@RequestMapping("/addSession/update")
+	public String addSessionUpdate(String sessionName){
+		Date now = new Date();
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		String create = ft.format(now);
+		Session session = new Session();
+		session.setSessionName(sessionName);
+		session.setCreate(create);
+		sessionService.insertSession(session);
+		return "redirect:addSession.do";
+
+	}
+
+	//添加候选人到活动中
+	@RequestMapping("/addSession/addPlayer/{sessionId}")
+	public String addPlayerToSession(@PathVariable("sessionId") int sessionId, Model model){
+		List<Player> absentPlayers = sessionService.getAbsentPlayersBySessionId(sessionId);
+		List<Player> presentPlayers = sessionService.getPresentPlayersBySessionId(sessionId);
+		model.addAttribute("absentPlayers",absentPlayers);
+		model.addAttribute("presentPlayers",presentPlayers);
+		model.addAttribute("sessionId",sessionId);
+		return "addPlayerToSession";
+	}
+	@RequestMapping("/addSession/addPlayer/{sessionId}/{playerId}")
 	@ResponseBody
-	public String addSessions(SessionTable sessionTable) {
-		//获取选手id,判断选手是否存在
-		Player pa=playerService.getPlayerByPlayerId(sessionTable.getPlayerA());
-		Player pb=playerService.getPlayerByPlayerId(sessionTable.getPlayerB());
-		
-		//返回选手是否参与本轮比赛了，0则没有，大于0则参与了比赛
-		int aa=sessionService.getWhetherTheEntry(pa);
-		int bb=sessionService.getWhetherTheEntry(pb);
-		//返回选手是否被淘汰
-		int at=playerService.getStateByPlayerId(sessionTable.getPlayerA());
-		int bt=playerService.getStateByPlayerId(sessionTable.getPlayerB());
-		if(pa==null||pb==null) {//判断选手存在否
-			return "0";
-		}else {
-			if(pa.getNum()!=pb.getNum()) {//判断选手是否在同一轮
-				return "0";
-			}else {
-				if(aa>0||bb>0) {//判断选手是否已经安排了比赛
-					return "0";
-				}else {
-					if(at==1||bt==1) {
-						return "0";
-					}else {//通过判断可以插入数据进入数据库
-						//查询数据库本轮比赛是已有几场
-						int nowField=sessionService.getNowField(pa.getNum()+1);
-						//拼凑nowSession字段
-						String nowSess;
-						nowSess=Integer.toString(pa.getNum()+1);
-						if(nowField<10) {
-							nowSess+="0";
-							nowSess+="0";
-							nowSess+=Integer.toString(nowField+1);
-						}else if(nowField>=10&&nowField<100) {
-							nowSess+="0";
-							nowSess+=Integer.toString(nowField/10);
-							nowSess+=Integer.toString(nowField%10+1);
-						}else if(nowField>=100&&nowField<999) {
-							nowSess+=Integer.toString(nowField/100);
-							nowSess+=Integer.toString((nowField%100)/10);
-							nowSess+=Integer.toString(nowField%10+1);
-						}else {
-							System.out.println("请扩充数据库字段nowSession");
-						}
-						//创建sessionTable对象，调用addsessionTable方法
-						SessionTable ses=new SessionTable();
-						ses.setWheel(pa.getNum()+1);
-						ses.setPlayerA(pa.getPlayerId());
-						ses.setPlayerB(pb.getPlayerId());
-						ses.setNowSession(nowSess);
-						sessionService.addSessionTable(ses);
-						return "1";
-					}
-				}
-			}
-		}
+	public void addPlayer(@PathVariable("sessionId") int sessionId,@PathVariable("playerId") int playerId){
+		sessionService.insertPlayerToSession(sessionId,playerId);
 	}
-	@RequestMapping("/queryGameTablePass")//跳转到queryGameTablePass页面
-	public String queryGameTablePass(Model model) {
-		List<SessionTable> ses=sessionService.getAllSessionTable();
-		model.addAttribute("ses",ses);
-		return "queryGameTablePass";
+
+	//投票
+	@RequestMapping("/votePlayer")
+	@ResponseBody
+	public int vote(@RequestParam("sessionId") int sessionId,
+					   @RequestParam("playerId") int playerId,
+					   @RequestParam("userId") int userId){
+		//TODO: 算法部分待完成以生成ballot
+		String ballot = "票据";
+		//生成票据
+		sessionService.votePlayer(sessionId,playerId,userId,ballot);
+		//投票计数
+		sessionService.updateCount(sessionId,playerId);
+		//查询票数
+		return sessionService.selectCount(sessionId,playerId);
 	}
-	
 }

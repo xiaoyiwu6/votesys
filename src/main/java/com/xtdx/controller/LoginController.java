@@ -1,5 +1,8 @@
 package com.xtdx.controller;
 
+import com.xtdx.pojo.Player;
+import com.xtdx.pojo.PlayerBindCount;
+import com.xtdx.pojo.Session;
 import com.xtdx.pojo.User;
 import com.xtdx.utils.CheckRole;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.web.servlet.function.ServerResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 //登录控制
 
@@ -27,10 +31,20 @@ public class LoginController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private SessionService sessionService;
+
 	//首页
 	@RequestMapping("/index")
-	public String index(HttpSession session){
+	public String index(HttpSession session,Model model){
 		if(CheckRole.checkLoginAndRole(session)>=0){
+			//查询当前是否有正在进行的投票
+			Session curSession = sessionService.getCurSession();
+			if(curSession!=null){
+				List<PlayerBindCount> curPlayersAndCount = sessionService.selectPlayerBindCount(curSession.getSessionId());
+				model.addAttribute("curSession",curSession);
+				model.addAttribute("curPlayers",curPlayersAndCount);
+			}
 			return "index";
 		}else{
 			return "redirect:login.do";

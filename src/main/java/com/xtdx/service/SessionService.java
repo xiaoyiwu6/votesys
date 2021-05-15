@@ -1,12 +1,17 @@
 package com.xtdx.service;
 
+import java.util.HashMap;
 import java.util.List;
 
+import com.sun.org.apache.bcel.internal.generic.ARETURN;
+import com.sun.org.apache.bcel.internal.generic.DRETURN;
 import com.xtdx.dao.SessionDao;
 import com.xtdx.pojo.Player;
+import com.xtdx.pojo.PlayerBindCount;
 import com.xtdx.pojo.Session;
 import com.xtdx.pojo.SessionTable;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,4 +83,39 @@ public class SessionService {
 	public Session getCurSession() {return sessionDao.getCurSession();}
 
 	public List<Session> getAllSession(){return sessionDao.getAllSession();}
+
+	public int insertSession(Session session){return sessionDao.insertSession(session);}
+
+	public List<Player> getAbsentPlayersBySessionId(int sessionId){return sessionDao.getAbsentPlayersBySessionId(sessionId);}
+
+	public List<Player> getPresentPlayersBySessionId(int sessionId){return sessionDao.getPresentPlayersBySessionId(sessionId);}
+
+	public int insertPlayerToSession(int sessionId, int playerId){
+		HashMap<String,Integer> map = new HashMap<String, Integer>();
+		map.put("sessionId", sessionId);
+		map.put("playerId",playerId);
+		return sessionDao.insertPlayerToSession(map);
+	}
+
+	public List<Player> getAbsentPlayersFromCurSession(int sessionId){return sessionDao.getAbsentPlayersFromCurSession(sessionId);}
+	public int votePlayer(int sessionId, int playerId, int userId, String ballot){return sessionDao.votePlayer(sessionId,playerId,userId,ballot);}
+
+	public int updateCount(int sessionId, int playerId) {
+		HashMap<String, Integer> map = new HashMap<String, Integer>();
+		map.put("sessionId", sessionId);
+		map.put("playerId", playerId);
+		return sessionDao.updateCount(map);
+	}
+
+	public int selectCount(int sessionId, int playerId) {
+		HashMap<String, Integer> map = new HashMap<String, Integer>();
+		map.put("sessionId", sessionId);
+		map.put("playerId", playerId);
+		return sessionDao.selectCount(map);
+	}
+
+	public List<PlayerBindCount> selectPlayerBindCount(int sessionId) {
+		return sessionDao.selectPlayerBindCount(sessionId);
+	}
+
 }

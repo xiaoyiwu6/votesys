@@ -1,7 +1,7 @@
 <%@ page language="java" isELIgnored="false" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
+         pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
     pageContext.setAttribute("APP_PATH", request.getContextPath());
@@ -37,88 +37,65 @@
             }
         }
     </style>
+    <!-- Custom styles for this template -->
+    <link href="${APP_PATH}/css/navbar.css" rel="stylesheet">
+
+    <!-- 按钮文字变化 -->
+    <script type="application/javascript">
+        function submit(form) {
+            var result = confirm("确认提交？");
+            if (result) {
+                document.myForm.submit();
+            }
+        }
+    </script>
 </head>
 <body>
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-    <a class="navbar-brand" href="#">WXY政务投票</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item ">
-                <a class="nav-link" href="${APP_PATH}/index.do">首页</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="${APP_PATH}/userManagement.do">选民管理</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="${APP_PATH}/playerContent.do">投票活动管理</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="${APP_PATH}/PlayerManagement.do">候选人管理</a>
-            </li>
-        </ul>
-        <form class="form-inline mt-2 mt-md-0" action="${APP_PATH}/signOut.do">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sign out</button>
-        </form>
-    </div>
-</nav>
-<main role="main" class="container">
-    <div class="panel panel-default">
-        <!-- Default panel contents -->
-        <div class="panel-heading">Panel heading</div>
-        <div class="panel-body">
-            <p>Some default panel content here. Nulla vitae elit libero, a pharetra augue. Aenean lacinia bibendum nulla sed
-                consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Nullam id dolor
-                id nibh ultricies vehicula ut id elit.</p>
+<c:if test="${sessionScope.curUser.level==1}">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">WXY政务投票</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item ">
+                    <a class="nav-link" href="${APP_PATH}/index.do">首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${APP_PATH}/userManagement.do">选民管理</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${APP_PATH}/playerContent.do">投票活动管理</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="${APP_PATH}/PlayerManagement.do">候选人管理</a>
+                </li>
+            </ul>
+            <form class="form-inline mt-2 mt-md-0" action="${APP_PATH}/signOut.do">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sign out</button>
+            </form>
         </div>
-
-        <!-- Table -->
-        <form id="form">
-            <table class="table table-hover table-bordered">
-                <thead>
-                <tr>
-                    <td>SessionId</td>
-                    <td>Session State</td>
-                    <td>Create</td>
-                    <td>Start</td>
-                    <td>End</td>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach items="${allSession}" var="session">
-                    <tr>
-                        <td>${session.sessionId}</td>
-                        <td>${session.state}</td>
-                        <td>${session.create}</td>
-                        <c:choose>
-                            <c:when test="${empty session.start}">
-                                <td>未开始</td>
-                            </c:when>
-                            <c:otherwise>
-                                <td>${session.start}</td>
-                            </c:otherwise>
-                        </c:choose>
-                        <c:choose>
-                            <c:when test="${empty session.end}">
-                                <td>未结束</td>
-                            </c:when>
-                            <c:otherwise>
-                                <td>${session.end}</td>
-                            </c:otherwise>
-                        </c:choose>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
-            <p>
-                <a href="${APP_PATH}/addSession.do"><button class="btn btn-primary btn-block" type="button">添加</button></a>
-            </p>
-        </form>
+    </nav>
+</c:if>
+<c:if test="${empty sessionScope.curUser}">
+    <a>sesion中的curUser不存在</a><br>
+</c:if>
+<br><br><br>
+<form class="form-horizontal" name="myForm" action="${APP_PATH}/addSession/update.do">
+    <div class="form-group">
+        <label for="inputName" class="col-sm-2 control-label">活动名字</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="inputName" name="sessionName" value="session">
+        </div>
     </div>
-
-</main>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" onclick="submit()" class="btn btn-primary">创建</button>
+        </div>
+    </div>
+</form>
 
 </body>
 </html>
