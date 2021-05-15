@@ -9,92 +9,116 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/publicNav.css">
-<script type="text/javascript" src="${pageContext.request.contextPath}/plugins/jquery-1.12.4.js"></script>
-<!--<script type="text/javascript" src="${pageContext.request.contextPath}/script/jquery-3.3.1.min.js"></script>-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="generator" content="Jekyll v4.1.1">
+    <title>WXY投票管理</title>
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/navbar-fixed/">
+
+    <!-- Bootstrap core CSS -->
+    <script type="text/javascript" src="${APP_PATH }/static/js/jquery-1.12.4.min.js"></script>
+    <link href="${APP_PATH }/static/bootstrap-4.5.3-dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="${APP_PATH }/static/bootstrap-4.5.3-dist/js/bootstrap.min.js"></script>
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<nav>
-        <ul>
-            <li>
-                <a href="back">首页</a>
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand" href="#">WXY政务投票</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item ">
+                <a class="nav-link" href="${APP_PATH}/index.do">首页</a>
             </li>
-            <li>
-                <a href="${pageContext.request.contextPath}/userManagement.do">用户管理</a>
+            <li class="nav-item">
+                <a class="nav-link" href="${APP_PATH}/userManagement.do">选民管理</a>
             </li>
-            <li>
-                <a href="${pageContext.request.contextPath}/playerContent.do">PK管理</a>
+            <li class="nav-item">
+                <a class="nav-link" href="${APP_PATH}/playerContent.do">投票活动管理</a>
             </li>
-            <li>
-                <a href="${pageContext.request.contextPath}/PlayerManagement.do">选手管理</a>
-            </li>
-            <li>
-                <a href="#">更多</a>
+            <li class="nav-item">
+                <a class="nav-link" href="${APP_PATH}/PlayerManagement.do">候选人管理</a>
             </li>
         </ul>
-    </nav>
-添加比赛列表
-<form id="form">
-		<table>
-            <c:forEach items="${players}" var="list">
+        <form class="form-inline mt-2 mt-md-0" action="${APP_PATH}/signOut.do">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sign out</button>
+        </form>
+    </div>
+</nav>
+<main role="main" class="container">
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Panel heading</div>
+        <div class="panel-body">
+            <p>Some default panel content here. Nulla vitae elit libero, a pharetra augue. Aenean lacinia bibendum nulla sed
+                consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Nullam id dolor
+                id nibh ultricies vehicula ut id elit.</p>
+        </div>
+
+        <!-- Table -->
+        <form id="form">
+            <table class="table table-hover table-bordered">
+                <thead>
                 <tr>
-                    <td>${list.playerId}</td>
-                    <td>${list.playername}</td>
-                    <c:if test="${list.state==0}">
-                        <td>未淘汰</td>
-                    </c:if>
-                    <c:if test="${list.state==1}">
-                        <td>淘汰</td>
-                    </c:if>
-                    <td>${list.num}</td>
-                    <td>
-                        <img src="${list.picAddress}" width="200">
-                    </td>
-                    <td>
-                        <img src="${list.smallImg}"  width="100">
-                    </td>
-                    <td>${list.dateOfBirth}</td>
-                    <c:if test="${list.sex==0}">
-                        <td>男</td>
-                    </c:if>
-                    <c:if test="${list.sex==1}">
-                        <td>女</td>
-                    </c:if>
-                    <td><a href="${APP_PATH}/editPlayer/${list.playerId}.do">编辑</a></td>
-                    <td><a onclick="delPlayer(${list.playerId})" href="#">删除</a></td>
+                    <td>SessionId</td>
+                    <td>Session State</td>
+                    <td>Create</td>
+                    <td>Start</td>
+                    <td>End</td>
                 </tr>
-            </c:forEach>
-			<tr>
-				<td colspan="2" style="text-align: center"><input type="button"
-					 value="添加场次" onclick="add()"/></td>
-			</tr>
-		</table>
-	</form>
-	<script>
-		function add(){
-			var playerA=$("#playerA").val();
-			var playerB=$("#playerB").val();
-			if(playerA==""){
-				alert("选手A的编号不能为空");
-				return;
-			}
-			if(playerB==""){
-				alert("选手B的编号不能为空");
-				return;
-			}
-			//开始发布异步AJAX请求
-			var url="${pageContext.request.contextPath}/addSessions";
-			var param=$("#form").serialize();
-			$.post(url,param,function(data){
-				if(data=="1"){
-					alert("添加成功")
-				}else if(data=="0"){
-					alert("添加失败，可能两位选手比赛轮数不匹配或其中一位选手已经在本轮有了比赛");
-				}
-			})
-		}
-	</script>
+                </thead>
+                <tbody>
+                <c:forEach items="${allSession}" var="session">
+                    <tr>
+                        <td>${session.sessionId}</td>
+                        <td>${session.state}</td>
+                        <td>${session.create}</td>
+                        <c:choose>
+                            <c:when test="${empty session.start}">
+                                <td>未开始</td>
+                            </c:when>
+                            <c:otherwise>
+                                <td>${session.start}</td>
+                            </c:otherwise>
+                        </c:choose>
+                        <c:choose>
+                            <c:when test="${empty session.end}">
+                                <td>未结束</td>
+                            </c:when>
+                            <c:otherwise>
+                                <td>${session.end}</td>
+                            </c:otherwise>
+                        </c:choose>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+            <p>
+                <a href="${APP_PATH}/addSession.do"><button class="btn btn-primary btn-block" type="button">添加</button></a>
+            </p>
+        </form>
+    </div>
+
+</main>
+
 </body>
 </html>
