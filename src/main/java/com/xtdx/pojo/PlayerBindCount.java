@@ -9,16 +9,34 @@ package com.xtdx.pojo;
 public class PlayerBindCount {
     private Player player;
     private int sessionId;
-    private int count;
+    private int playerId;
 
     @Override
     public String toString() {
         return "PlayerBindCount{" +
                 "player=" + player +
                 ", sessionId=" + sessionId +
+                ", playerId=" + playerId +
                 ", count=" + count +
                 '}';
     }
+
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
+
+    public PlayerBindCount(Player player, int sessionId, int playerId, int count) {
+        this.player = player;
+        this.sessionId = sessionId;
+        this.playerId = playerId;
+        this.count = count;
+    }
+
+    private int count;
 
     public Player getPlayer() {
         return player;
@@ -47,9 +65,4 @@ public class PlayerBindCount {
     public PlayerBindCount() {
     }
 
-    public PlayerBindCount(Player player, int sessionId, int count) {
-        this.player = player;
-        this.sessionId = sessionId;
-        this.count = count;
-    }
 }

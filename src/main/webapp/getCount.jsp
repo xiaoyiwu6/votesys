@@ -37,56 +37,33 @@
             }
         }
     </style>
-    <style type="text/css">
-        img[src=""],img:not([src]){
-            opacity:0;
-
-        }
-    </style>
     <!-- Custom styles for this template -->
-    <link href="${APP_PATH}/css/navbar.css" rel="stylesheet">
-    <script type="text/javascript">
-        function add() {
-            var url = "/addPlayer/add.do";
-            var param = new FormData($("#form")[0]);
-            var bp = $("#bigImg").val();
-            var sp = $("#smallImg").val();
-            if (bp != "" && sp != "") {
-                $.ajax({
-                    url: url,
-                    type: "post",
-                    data: param,
-                    processData: false,
-                    contentType: false,
-                    success: function (data) {
-                        if (data == "1") {
-                            location.href = "${pageContext.request.contextPath}/PlayerManagement.do"
-                        } else {
-                            alert("新增失败！")
-                        }
-                    }, error: function (data) {
+    <link href="${APP_PATH}/css/album.css" rel="stylesheet">
+    <script type="application/javascript">
+        function checkPlayer(sessionId,playerId) {
 
-                    }
-                });
-            } else {
-                alert("未选择图片!")
-            }
+            var url = "${APP_PATH}/getCount/checkAndCount.do";
+            var formData = new FormData();
+            formData.set("sessionId",sessionId);
+            formData.set("playerId",playerId);
 
+            $.ajax({
+                url: url,
+                data: formData,
+                async: true,
+                type: "post",
+                processData:false,
+                contentType:false,
+                success: function (data) {
+                    alert("计票结果为-->"+data);
+                    location.reload();
+                }, error: function (data) {
+                    alert("出错！")
+                }
+            })
         }
-    </script>
-    <script>
-        $(function () {
-            //显示更换后的图片
-            $("#bigImg").change(function () {
-                $("#big").attr("src", URL.createObjectURL($(this)[0].files[0]));
-            });
-            $("#smallImg").change(function () {
-                $("#small").attr("src", URL.createObjectURL($(this)[0].files[0]));
-            });
-        });
     </script>
 </head>
-<body>
 <c:if test="${sessionScope.curUser.level==1}">
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <a class="navbar-brand" href="#">WXY政务投票</a>
@@ -121,58 +98,44 @@
 <c:if test="${empty sessionScope.curUser}">
     <a>sesion中的curUser不存在</a><br>
 </c:if>
-<br><br><br>
-<form id="form" enctype="multipart/form-data" method="post">
-    <table>
+<div class="jumbotron bg-white">
+    <h1>本轮投票结果如下</h1>
+</div>
+<main role="main" class="container">
+    <table class="table table-hover table-bordered">
+        <thead>
         <tr>
-            <td>候选人姓名：</td>
-            <td><input type="text" id="playerName" name="playerName"/></td>
+            <th>候选人ID</th>
+            <th>候选人姓名</th>
+            <th>候选人大图片</th>
+            <th>候选人参赛次数</th>
+            <th>操作</th>
         </tr>
-        <tr>
-            <td>候选人已参与投票次数：</td>
-            <td><input type="text"  name="num" id="num" /></td>
-        </tr>
-        <tr>
-            <td>候选人大图片</td>
-            <td><img src="" width="200" id="big"></td>
-            <td>
-                <input type="file" name="bigImg" id="bigImg" value="0"/>
-            </td>
-        </tr>
-
-        <tr>
-            <td>候选人小图片:</td>
-            <td><img src="" width="100" id="small"></td>
-            <td><input type="file" name="smallImg" id="smallImg"  value="0"/></td>
-        </tr>
-        <tr>
-            <td>候选人出生日期：</td>
-            <td><input type="text" name="dateOfBirth" id="dateOfBirth" /></td>
-        </tr>
-        <tr>
-            <td>候选人性别：</td>
-            <td>
-                <select name="sex" style="width: 160px" id="sex">
-                    <option value="1">女</option>
-                    <option value="0">男</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-        <tr>
-            <td>候选人宣传语：</td>
-            <td><input type="text" id="slogan" name="slogan"/></td>
-        </tr>
-        <tr>
-            <td>候选人个人信息：</td>
-            <td><input type="text" id="info" name="info" /></td>
-        </tr>
-        </tr>
-        <tr>
-            <td colspan="2" style="text-align: center"><input type="button" value="修改" onclick="add()"/></td>
-        </tr>
+        </thead>
+        <tbody>
+        <c:forEach items="${playerCounts}" var="list">
+            <tr>
+                <td>${list.player.playerId}</td>
+                <td>${list.player.playerName}</td>
+                <td>
+                    <img src="${list.player.picAddress}" width="200">
+                </td>
+                <td>${list.sessionPlayer.count}</td>
+                <td><a href="#"  onclick="checkPlayer(${list.sessionPlayer.sessionId},${list.sessionPlayer.playerId})">验票</a></td>
+            </tr>
+        </c:forEach>
+        </tbody>
     </table>
-</form>
+    <div>
+        <p>
+            <a href="${APP_PATH}/endSession.do">
+                <button class="btn btn-primary btn-block" type="button">结束本轮投票</button>
+            </a>
+        </p>
+    </div>
+
+</main>
+
 
 </body>
 </html>

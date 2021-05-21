@@ -52,4 +52,30 @@ public class SessionPlayer {
         this.playerId = playerId;
         this.count = count;
     }
+
+
+
+    public String getRSAEncryptedStr() {
+        return null;
+    }
+
+    public String getRSAPublicKey() {
+        return null;
+    }
+
+    public String getRSABallot() {        return null;
+
+    }
+
+    public String getECCEncryptedStr() {        return null;
+
+    }
+
+    public String getECCPublicKey() {        return null;
+
+    }
+
+    public String getECCBallot() {        return null;
+
+    }
 }

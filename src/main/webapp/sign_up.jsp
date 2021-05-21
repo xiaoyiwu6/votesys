@@ -26,6 +26,7 @@
     <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/sign-in/">
 
     <!-- Bootstrap core CSS -->
+    <script type="text/javascript" src="${APP_PATH}/script/jsencrypt.min.js"></script>
     <script type="text/javascript" src="${APP_PATH }/static/js/jquery-1.12.4.min.js"></script>
     <link href="${APP_PATH }/static/bootstrap-4.5.3-dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="${APP_PATH }/static/bootstrap-4.5.3-dist/js/bootstrap.min.js"></script>
@@ -55,24 +56,45 @@
         const pattern = /^[a-zA-Z]([-_a-zA-Z0-9]{6,18})$/;
         return pattern.test(value);
     }
-    <%--function submit(form) {--%>
-    <%--    var url = "${APP_PATH}/signUp.do";--%>
-    <%--    console.log(form);--%>
-    <%--    $.ajax({--%>
-    <%--        url:url,--%>
-    <%--        type: "post",--%>
-    <%--        data: form,--%>
-    <%--        processData:false,--%>
-    <%--        contentType:false,--%>
-    <%--        success:function (deal) {--%>
-    <%--            if(deal=="1"){--%>
-    <%--                location.href="${APP_PATH}/login.do";--%>
-    <%--            }else{--%>
-    <%--                alert("注册失败，账号重复")--%>
-    <%--            }--%>
-    <%--        }--%>
-    <%--    })--%>
-    <%--}--%>
+    function encrypt(password) {
+        let jse = new JSEncrypt();
+        let pubStr = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCLNbmKl9/gLn7Bef/xtUkshC1WyrLZLRpXCcFYR1gQi0isWsZBTicC4efBOkkNG3r+1ue0gvtuU/tjREFGf4Y7HaKHGb5tNCOlMNeNjM5YLRwLFqrUSsQyD4rj4eua1ltearr24R0HilnTvnQm6Z/UY0s21vdOUFQBPY0GNAa+0wIDAQAB';
+
+        jse.setPublicKey(pubStr);
+        //RSA公钥加密
+        return  jse.encrypt(password);
+    }
+    function submit() {
+        var url = "${APP_PATH}/signUp.do";
+        var formData = new FormData($("#form")[0]);
+        console.log(formData.get("account"));
+        console.log(formData.get("password"));
+
+        //加密密码
+        var pwd = formData.get("password");
+        var encryptedPwd = encrypt(pwd);
+        //修改明文
+        formData.set("password",encryptedPwd);
+
+        $.ajax({
+            url: url,
+            data: formData,
+            async: true,
+            type: "post",
+            processData:false,
+            contentType:false,
+            success: function (data) {
+                if(data=="1"){
+                    location.href="${APP_PATH}/login.do";
+                }else{
+                    alert("注册失败，账户重复！");
+                }
+            }, error: function (data) {
+                alert("传输错误！");
+            }
+        })
+    }
+
     function checkForm(form) {
         if(form.account.value == ''){
             window.alert("账户名不能为空");
@@ -87,18 +109,13 @@
             window.alert("密码以字母开头，长度在6-18，只能包含字数、数字、下划线");
             return false;
         }else{
-            document.myForm.submit();
+            submit();
         }
     }
 </script>
-<form class="form-signin" name="myForm" action="${APP_PATH}/signUp.do">
-    <img class="mb-4" src="${pageContext.request.contextPath}/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-    <c:if test="${!empty deal}">
-        <h1 class="h3 mb-3 font-weight-normal">Account already exists.Please sign again.</h1>
-    </c:if>
-    <c:if test="${empty deal}">
-        <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
-    </c:if>
+<form class="form-signin" id="form" method="post" >
+    <img class="mb-4" src="${pageContext.request.contextPath}/assets/brand/vote.svg" alt="" width="72" height="72">
+    <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
     <label for="inputAccount" class="sr-only">Account</label>
     <input type="email" id="inputAccount" class="form-control" placeholder="Account" name="account" required autofocus>
     <label for="inputPassword" class="sr-only">Password</label>

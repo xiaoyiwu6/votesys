@@ -3,12 +3,12 @@ package com.xtdx.dao;
 import java.util.HashMap;
 import java.util.List;
 
+import com.xtdx.pojo.Player;
 import com.xtdx.pojo.PlayerBindCount;
 import com.xtdx.pojo.Session;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import com.xtdx.pojo.Player;
 import com.xtdx.pojo.SessionTable;
 
 @Repository
@@ -162,4 +162,46 @@ public interface SessionDao {
 	 * 	</select>
 	 */
 	public List<PlayerBindCount> selectPlayerBindCount(@Param("sessionId") int sessionId);
+
+	/**
+	 *  开始session
+	 * 	<update id="beginSessionById" >
+	 * 		UPDATE
+	 * 		  `VOTE`.`session`
+	 * 		SET
+	 * 		  `state` = 1,
+	 * 		  `start` = ${start},
+	 * 		WHERE `sessionId` = ${sessionId};
+	 * 	</update>
+	 */
+	public int beginSessionById(@Param("start") String start,@Param("sessionId") int sessionId);
+
+	/**
+	 * 结束session
+	 * 	<update id="endCurSession" parameterType="String">
+	 * 		UPDATE
+	 * 		  `VOTE`.`session`
+	 * 		SET
+	 * 		  `state` = 1,
+	 * 		  `start` = STR_TO_DATE(#{end},'%Y-%m-%d %H:%i:%s')
+	 * 		WHERE `sessionId` = 1;
+	 * 	</update>
+	 */
+	public int endCurSession(String end);
+
+	/**
+	 * 查找正在进行的session
+	 * 	<select id="selectCurSession" resultType="com.xtdx.pojo.Session">
+	 * 		SELECT * FROM `VOTE`.`session` WHERE state=1;
+	 * 	</select>
+	 */
+	public Session selectCurSession();
+
+	/**
+	 * 修改活动名字
+	 * 	<update id="updateSessionNameBySessionId" >
+	 * 		UPDATE `session` SET sessionName=#{sessionName} WHERE  sessionId=#{sessionId};
+	 * 	</update>
+	 */
+	public int updateSessionNameBySessionId(@Param("sessionName") String sessionName,@Param("sessionId") int sessionId);
 }

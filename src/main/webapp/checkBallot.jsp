@@ -18,23 +18,27 @@
     <link href="${APP_PATH }/static/bootstrap-4.5.3-dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="${APP_PATH }/static/bootstrap-4.5.3-dist/js/bootstrap.min.js"></script>
 
+    <style type="text/css">
+        img[src=""],img:not([src]){
+            opacity:0;
+
+        }
+    </style>
     <script type="text/javascript">
         $(function(){
-            $("#state").val(${player.state}?1:0);
-            $("#sex").val(${player.sex}?1:0);
             //显示更换后的图片
-            $("#bigImg").change(function() {
-                $("#big").attr("src",URL.createObjectURL($(this)[0].files[0]));
-            });
-            $("#smallImg").change(function() {
-                $("#small").attr("src",URL.createObjectURL($(this)[0].files[0]));
+            $("#ballot").change(function() {
+                $("#ballotImg").attr("src",URL.createObjectURL($(this)[0].files[0]));
             });
         });
     </script>
     <script type="text/javascript">
-        function edit() {
-            var url = "${APP_PATH}/editPlayer/update.do";
+        function check() {
+            var url = "${APP_PATH}/checkBallot/check.do";
             var formData = new FormData($("#form")[0]);
+            formData.append("userId",${sessionCount.userId});
+            formData.append("playerId",${sessionCount.playerId});
+            formData.append("sessionId",${sessionCount.sessionId});
             $.ajax({
                 url: url,
                 data: formData,
@@ -44,10 +48,18 @@
                 contentType:false,
                 success: function (data) {
                     if(data=="1"){
-                        console.log("over");
-                        location.href="${APP_PATH}/PlayerManagement.do";
+                        alert("校验成功");
+                        document.getElementById('success').style.display='block';
+                        document.getElementById('fail').style.display='none';
+
+                    }else{
+                        alert("校验失败");
+                        document.getElementById('fail').style.display='block';
+                        document.getElementById('success').style.display='none';
+
                     }
                 }, error: function (data) {
+                    alert("出错")
                 }
             })
         }
@@ -89,55 +101,29 @@
 <form id="form" enctype="multipart/form-data" method="post">
     <table>
         <tr>
-            <td>候选人姓名：</td>
-            <td><input type="text" id="playerName" name="playerName" value="${player.playerName}"/></td>
-        </tr>
-        <tr>
-            <td>候选人已参与投票次数：</td>
-            <td><input type="text"  name="num" id="num" value="${player.num}"/></td>
-        </tr>
-        <tr>
-            <td>候选人大图片</td>
-            <td><img src="${player.picAddress}" width="200" id="big"></td>
+            <td>上传选票</td>
+            <td><img src="" alt="Ballot" width="200" id="ballotImg"></td>
             <td>
-                <input type="file" name="bigImg" id="bigImg" value="0"/>
+                <input type="file" name="ballot" id="ballot" value="0"/>
             </td>
+            <td><button class="btn btn-success" onclick="check()" type="button">校验</button></td>
+        </tr>
+        <tr>
+            <td><br></td>
+        </tr>
+        <tr >
+            <td><span>检验后的投票结果是：</span></td>
+            <td>
+                <div class="durl"  contenteditable="true">
+                         <span style="display: none" id="success"  ><span style="color: green;">数字签名验证通过！</span></span>
+                         <span style="display: none" id="fail"  ><span style="color: red;">数字签名验证失败！</span></span>
+                </div>
+            </td>
+
         </tr>
 
-        <tr>
-            <td>候选人小图片:</td>
-            <td><img src="${player.smallImg}" width="100" id="small"></td>
-            <td><input type="file" name="smallImg" id="smallImg"  value="0"/></td>
-        </tr>
-        <tr>
-            <td>候选人出生日期：</td>
-            <td><input type="text" name="dateOfBirth" id="dateOfBirth" value="${player.dateOfBirth}"/></td>
-        </tr>
-        <tr>
-            <td>候选人性别：</td>
-            <td>
-                <select name="sex" style="width: 160px" id="sex">
-                    <option value="1">女</option>
-                    <option value="0">男</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-        <tr>
-            <td>候选人宣传语：</td>
-            <td><input type="text" id="slogan" name="slogan" value="${player.slogan}"/></td>
-        </tr>
-        <tr>
-            <td>候选人个人信息：</td>
-            <td><input type="text" id="info" name="info" value="${player.info}"/></td>
-        </tr>
-        </tr>
-        <tr>
-            <td colspan="2" style="text-align: center"><input type="button"
-                                                              value="修改" onclick="edit()"/></td>
-            <td><input type="hidden" name="playerId" id="playerId" value="${player.playerId}" /></td>
-        </tr>
     </table>
+
 </form>
 </body>
 </html>

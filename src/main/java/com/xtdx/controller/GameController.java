@@ -2,21 +2,18 @@ package com.xtdx.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-import java.util.logging.SimpleFormatter;
 
-import com.xtdx.pojo.Session;
-import org.apache.ibatis.annotations.Param;
+import com.xtdx.encryption.ECC;
+import com.xtdx.encryption.RSA;
+import com.xtdx.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.xtdx.pojo.Player;
-import com.xtdx.pojo.SessionTable;
 import com.xtdx.service.*;
-
-import javax.jws.WebParam;
 
 //比赛控制
 @Controller
@@ -44,29 +41,21 @@ public class GameController {
 		return "games";
 	}
 	
-	@RequestMapping("/beginGame")
+	@RequestMapping(value = "/beginGame", method = RequestMethod.POST)
 	@ResponseBody
-	public String beginGame(String nowSession) {
-		//获取sessiontable中比赛状态是否有开始比赛的
-		int j=sessionService.getgameNow();
-		//获取当前比赛状态是否是结束的
-		int k=sessionService.getgameNowBynowSession(nowSession);
-		if(j==0) {
-			if(k!=2) {
-				//开始比赛
-				boolean i = sessionService.beginGame(nowSession);
-				if(i==true) {
-					return "1";
-				}else {
-					return "0";
-				}
-			}else {
-				return "0";
-			}
-		}else {
+	public String beginGame(@RequestParam("sessionId") int sessionId) {
+		System.out.println(sessionId);
+		Session session = sessionService.getCurSession();
+		//当前没有正在进行的活动
+		if(session==null){
+			Date now = new Date();
+			SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+			String start = ft.format(now);
+			sessionService.beginSessionById(start,sessionId);
+			return "1";
+		}else{//有正在进行的活动
 			return "0";
 		}
-		
 	}
 	
 	@RequestMapping("/oversGame")
@@ -137,24 +126,6 @@ public class GameController {
 		}
 		}
 	}
-	
-	@RequestMapping("/stopsGame")
-	@ResponseBody
-	public String stopsGame(String nowSession) {
-		//获取比赛是否结束
-		int j=sessionService.getgameNowBynowSession(nowSession);
-		if(j==1) {
-			//暂停比赛
-			boolean i = sessionService.stopsGame(nowSession);
-			if(i==true) {
-				return "1";
-			}else {
-				return "0";
-			}
-		}else {
-			return "0";
-		}
-	}
 
 	//创建新活动
 	@RequestMapping("/addSession")
@@ -173,6 +144,12 @@ public class GameController {
 		return "redirect:addSession.do";
 
 	}
+	//修改活动名
+	@RequestMapping("/addSession/updateName")
+	public String updateSessionName(String sessionName, int sessionId){
+		sessionService.updateSessionNameBySessionId(sessionName,sessionId);
+		return "redirect:playerContent.do";
+	}
 
 	//添加候选人到活动中
 	@RequestMapping("/addSession/addPlayer/{sessionId}")
@@ -190,19 +167,54 @@ public class GameController {
 		sessionService.insertPlayerToSession(sessionId,playerId);
 	}
 
-	//投票
-	@RequestMapping("/votePlayer")
-	@ResponseBody
-	public int vote(@RequestParam("sessionId") int sessionId,
-					   @RequestParam("playerId") int playerId,
-					   @RequestParam("userId") int userId){
-		//TODO: 算法部分待完成以生成ballot
-		String ballot = "票据";
-		//生成票据
-		sessionService.votePlayer(sessionId,playerId,userId,ballot);
-		//投票计数
-		sessionService.updateCount(sessionId,playerId);
-		//查询票数
-		return sessionService.selectCount(sessionId,playerId);
+	//结束当前活动
+	@RequestMapping("/endSession")
+	public String endCurSession(){
+		Date now = new Date();
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		String end = ft.format(now);
+		//插入结束日期
+		sessionService.endCurSession(end);
+		//清楚候选人状态
+		playerService.cleanPlayerState();
+		return "redirect:index.do";
+	}
+
+	@RequestMapping("/allSessions")
+	public String allSessions(){
+
+		return "allSessions";
+	}
+
+	//结束并计票
+	@RequestMapping("/getCount")
+	public String getCount(Model model) throws Exception {
+		//获取所有参与本轮投票活动的候选人
+		List<PlayerCount> playerCounts = playerService.selectAllPlayerCount();
+//		//获取迭代器
+//		Iterable<PlayerCount> playerCountIterable = (Iterable<PlayerCount>) playerCounts.iterator();
+//		Iterator<PlayerCount> iterator = playerCountIterable.iterator();
+//		//对所有候选人的票选进行计票验票
+//		while(iterator.hasNext()){
+//			//获取必要数据
+//			SessionPlayer sessionPlayer = iterator.next().getSessionPlayer();
+//			String RSAEncryptedStr = sessionPlayer.getRSAEncryptedStr();
+//			String RSApublicKey = sessionPlayer.getRSAPublicKey();
+//			String RSASign = sessionPlayer.getRSABallot();
+//			String ECCEncryptedStr = sessionPlayer.getECCEncryptedStr();
+//			String ECCpublicKey = sessionPlayer.getECCPublicKey();
+//			String ECCSign = sessionPlayer.getECCBallot();
+//			//RSA校验
+//			boolean RSA_RESULT = RSA.verify(RSAEncryptedStr,RSApublicKey,RSASign);
+//			//ECC校验
+//			boolean ECC_RESULT = ECC.verify(ECCEncryptedStr,ECCpublicKey,ECCSign);
+//			//检验是否通过并纳入计票
+//			if(RSA_RESULT && ECC_RESULT){
+//				sessionPlayer.setCount(sessionPlayer.getCount()+1);
+//			}
+//		}
+
+		model.addAttribute("playerCounts",playerCounts);
+		return "getCount";
 	}
 }

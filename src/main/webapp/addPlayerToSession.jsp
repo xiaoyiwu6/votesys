@@ -46,15 +46,16 @@
             //console.log(id);
             $.ajax({
                 url:"${APP_PATH}/addSession/addPlayer/${sessionId}/"+id+".do",
-                data:{id:id},
                 type:"post",
                 dataType:"json",
                 contentType:"application/json", //这个必须，不然后台接受时会出现乱码现象
                 success:function(data){
                     console.log("修改成功");
+                    location.reload();
                 },
                 error:function(){
                     alert("出错了");
+                    location.reload();
                 }
             })
         }
@@ -80,6 +81,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="${APP_PATH}/PlayerManagement.do">候选人管理</a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="${APP_PATH}/vote.do">我的选票</a>
                 </li>
             </ul>
             <form class="form-inline mt-2 mt-md-0" action="${APP_PATH}/signOut.do">
@@ -168,15 +172,7 @@
         </c:forEach>
         </tbody>
     </table>
-    <script type="application/javascript">
-        $("#addButton").click(function () {
-            console.log("有按钮被触发");
-            $(this).text("已加");
-            $(this).attr("disabled","disabled");
-            $(this).attr("class","btn btn-default");
-        })
-    </script>
-    <form class="form-horizontal" name="myForm" action="${APP_PATH}/addSession/update.do">
+    <form class="form-horizontal" name="myForm" action="${APP_PATH}/addSession/updateName.do">
         <div class="form-group">
             <label for="inputName" class="col-sm-2 control-label">活动名字</label>
             <div class="col-sm-10">
@@ -185,9 +181,10 @@
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-primary">提交</button>
+                <button type="submit" class="btn btn-primary" >修改</button>
             </div>
         </div>
+        <input type="text" value="${sessionId}" hidden="hidden"/>
     </form>
 </main>
 

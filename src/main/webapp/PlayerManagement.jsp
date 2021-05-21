@@ -49,10 +49,10 @@
                 var param = {playerId: id};
                 $.post(url, param, function (data) {
                     if (data == "1") {
-                        alert("选手删除成功!")
+                        alert("候选人删除成功!")
                         location.href = "PlayerManagement";
                     } else {
-                        alert("选手删除失败!")
+                        alert("候选人删除失败!")
                     }
                 });
             }
@@ -81,6 +81,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="${APP_PATH}/PlayerManagement.do">候选人管理</a>
                 </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="${APP_PATH}/vote.do">我的选票</a>
+                </li>
             </ul>
             <form class="form-inline mt-2 mt-md-0" action="${APP_PATH}/signOut.do">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sign out</button>
@@ -96,14 +99,14 @@
     <table class="table table-hover table-bordered">
         <thead>
         <tr>
-            <th>选手id</th>
-            <th>选手姓名</th>
-            <th>选手状态</th>
-            <th>选手参赛次数</th>
-            <th>选手大图片</th>
-            <th>选手小图片</th>
-            <th>选手出生日期</th>
-            <th>选手性别</th>
+            <th>候选人id</th>
+            <th>候选人姓名</th>
+            <th>候选人状态</th>
+            <th>候选人参赛次数</th>
+            <th>候选人大图片</th>
+            <th>候选人小图片</th>
+            <th>候选人出生日期</th>
+            <th>候选人性别</th>
             <th colspan="2">操作</th>
         </tr>
         </thead>
@@ -133,7 +136,7 @@
                     <td>女</td>
                 </c:if>
                 <td><a href="${APP_PATH}/editPlayer/${list.playerId}.do">编辑</a></td>
-                <td><a onclick="delPlayer(${list.playerId})" href="#">删除</a></td>
+                <td><a onclick="del(${list.playerId})" href="#">删除</a></td>
             </tr>
         </c:forEach>
         </tbody>

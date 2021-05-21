@@ -1,6 +1,5 @@
 package com.xtdx.controller;
 
-import com.xtdx.pojo.Player;
 import com.xtdx.pojo.PlayerBindCount;
 import com.xtdx.pojo.Session;
 import com.xtdx.pojo.User;
@@ -14,9 +13,7 @@ import com.xtdx.service.LoginService;
 
 
 import com.xtdx.service.*;
-import org.springframework.web.servlet.function.ServerResponse;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -40,6 +37,7 @@ public class LoginController {
 		if(CheckRole.checkLoginAndRole(session)>=0){
 			//查询当前是否有正在进行的投票
 			Session curSession = sessionService.getCurSession();
+			System.out.println(curSession.toString());
 			if(curSession!=null){
 				List<PlayerBindCount> curPlayersAndCount = sessionService.selectPlayerBindCount(curSession.getSessionId());
 				model.addAttribute("curSession",curSession);
@@ -54,15 +52,22 @@ public class LoginController {
 	@RequestMapping("/signIndex")
 	public String signIndex(){ return "sign_up";}
 	@RequestMapping("/signUp")
+	@ResponseBody
 	public String sign(User user,Model model){
+		System.out.println(user.toString());
+		//注册
 		int i = loginService.sign(user);
+		int userId = userService.getUserByAccount(user.getAccount()).getUserId();
+		user.setUserId(userId);
+		//派生密钥
+		userService.genKeyPairs(user.getUserId());
 		if(i>0){
 			System.out.println(user.getLevel());
 			model.addAttribute("deal","1");
-			return "redirect:login.do";
+			return "1";
 		}else{
 			model.addAttribute("deal","0");
-			return "sign_up";
+			return "0";
 		}
 	}
 
@@ -76,18 +81,19 @@ public class LoginController {
 		}
 
 	@RequestMapping("submit")
+	@ResponseBody
 	public String login_submit(User user, Model model){
-		//System.out.println(user.toString());
-		boolean result = loginService.execute(user.getAccount());
+		System.out.println(user.toString());
+		boolean result = loginService.execute(user);
 		User data = userService.getUserByAccount(user.getAccount());
 		if(result){
+
 			model.addAttribute("curUser",data);
 			model.addAttribute("isLogin","1");
-			return "index";
+			return "1";
 		}else{
 			model.addAttribute("deal","0");
-			return "redirect:login";
-
+			return "0";
 		}
 	}
 }

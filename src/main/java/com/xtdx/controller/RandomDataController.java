@@ -18,16 +18,7 @@ public class RandomDataController {
 		return "RandomData";
 	}
 	
-//	@RequestMapping("/RandomData/addUser")
-//	@ResponseBody
-//	public String addUser(String num){
-//		int i=uservice.addUser(num);
-//		if(i>0){
-//			return "1";
-//		}else{
-//			return "0";
-//		}
-//	}
+
 	@RequestMapping("/back")
 	public String back() {
 		return "login_succ";

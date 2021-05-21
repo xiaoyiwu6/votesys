@@ -37,56 +37,44 @@
             }
         }
     </style>
-    <style type="text/css">
-        img[src=""],img:not([src]){
-            opacity:0;
-
-        }
-    </style>
     <!-- Custom styles for this template -->
-    <link href="${APP_PATH}/css/navbar.css" rel="stylesheet">
-    <script type="text/javascript">
-        function add() {
-            var url = "/addPlayer/add.do";
-            var param = new FormData($("#form")[0]);
-            var bp = $("#bigImg").val();
-            var sp = $("#smallImg").val();
-            if (bp != "" && sp != "") {
-                $.ajax({
-                    url: url,
-                    type: "post",
-                    data: param,
-                    processData: false,
-                    contentType: false,
-                    success: function (data) {
-                        if (data == "1") {
-                            location.href = "${pageContext.request.contextPath}/PlayerManagement.do"
-                        } else {
-                            alert("新增失败！")
-                        }
-                    }, error: function (data) {
+    <link href="${APP_PATH}/css/album.css" rel="stylesheet">
+    <script type="application/javascript">
 
+        function vote(playerId) {
+            var formData = new FormData();
+            formData.append("sessionId",${curSession.sessionId});
+            formData.append("playerId",playerId);
+            formData.append("userId",${sessionScope.curUser.userId});
+
+
+            console.log(${curSession.sessionId});
+            console.log(playerId);
+            console.log(${sessionScope.curUser.userId});
+
+            $.ajax({
+                url: "${APP_PATH}/votePlayer.do",
+                data: formData,
+                async: true,
+                type: "post",
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if(data=="1"){
+                        alert("投票成功");
+                        location.reload();
+                    }else{
+                        alert("不可重复投票！");
                     }
-                });
-            } else {
-                alert("未选择图片!")
-            }
 
+                },
+                error: function () {
+                    alert("出错了");
+                }
+            })
         }
-    </script>
-    <script>
-        $(function () {
-            //显示更换后的图片
-            $("#bigImg").change(function () {
-                $("#big").attr("src", URL.createObjectURL($(this)[0].files[0]));
-            });
-            $("#smallImg").change(function () {
-                $("#small").attr("src", URL.createObjectURL($(this)[0].files[0]));
-            });
-        });
     </script>
 </head>
-<body>
 <c:if test="${sessionScope.curUser.level==1}">
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <a class="navbar-brand" href="#">WXY政务投票</a>
@@ -121,58 +109,50 @@
 <c:if test="${empty sessionScope.curUser}">
     <a>sesion中的curUser不存在</a><br>
 </c:if>
-<br><br><br>
-<form id="form" enctype="multipart/form-data" method="post">
-    <table>
-        <tr>
-            <td>候选人姓名：</td>
-            <td><input type="text" id="playerName" name="playerName"/></td>
-        </tr>
-        <tr>
-            <td>候选人已参与投票次数：</td>
-            <td><input type="text"  name="num" id="num" /></td>
-        </tr>
-        <tr>
-            <td>候选人大图片</td>
-            <td><img src="" width="200" id="big"></td>
-            <td>
-                <input type="file" name="bigImg" id="bigImg" value="0"/>
-            </td>
-        </tr>
+<c:if test="${empty curSession}">
+    <div class="jumbotron bg-white">
+        <h1>欢迎来到WXY政务投票系统</h1>
+        <p>当前尚且没有正在进行的投票活动</p>
+        <p><a class="btn btn-primary btn-lg" href="${APP_PATH}/allSessions.do" role="button">查看往期投票活动</a></p>
+    </div>
+</c:if>
+<c:if test="${!empty curSession}">
+    <main role="main">
 
-        <tr>
-            <td>候选人小图片:</td>
-            <td><img src="" width="100" id="small"></td>
-            <td><input type="file" name="smallImg" id="smallImg"  value="0"/></td>
-        </tr>
-        <tr>
-            <td>候选人出生日期：</td>
-            <td><input type="text" name="dateOfBirth" id="dateOfBirth" /></td>
-        </tr>
-        <tr>
-            <td>候选人性别：</td>
-            <td>
-                <select name="sex" style="width: 160px" id="sex">
-                    <option value="1">女</option>
-                    <option value="0">男</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-        <tr>
-            <td>候选人宣传语：</td>
-            <td><input type="text" id="slogan" name="slogan"/></td>
-        </tr>
-        <tr>
-            <td>候选人个人信息：</td>
-            <td><input type="text" id="info" name="info" /></td>
-        </tr>
-        </tr>
-        <tr>
-            <td colspan="2" style="text-align: center"><input type="button" value="修改" onclick="add()"/></td>
-        </tr>
-    </table>
-</form>
+        <section class="jumbotron text-center">
+            <div class="container">
+                <h1>${curSession.sessionName}</h1>
+                <p class="lead text-muted">活动开始于${curSession.start}</p>
+            </div>
+        </section>
+
+        <div class="album py-5 bg-light">
+            <div class="container">
+
+                <div class="row">
+                    <c:forEach items="${curPlayers}" var="player">
+                        <div class="col-md-4">
+                            <div class="card mb-4 shadow-sm">
+                                <img src="${player.player.picAddress}" class="bd-placeholder-img card-img-top" width="100%" height="225" alt="">
+                                <div class="card-body">
+                                    <p class="card-body">${player.player.playerName}<br>${player.player.slogan}<br>${player.player.info}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" disabled></button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="vote(${player.playerId})">投票</button>
+                                        </div>
+                                        <small class="text-muted">当前票数：${player.count}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</c:if>
 
 </body>
 </html>

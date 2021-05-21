@@ -2,11 +2,9 @@ package com.xtdx.dao;
 
 import java.util.List;
 
+import com.xtdx.pojo.*;
 import org.springframework.stereotype.Repository;
-
-import com.xtdx.pojo.Player;
-import com.xtdx.pojo.SessionTable;
-import com.xtdx.pojo.SingleCount;
+import sun.security.krb5.SCDynamicStoreConfig;
 
 @Repository
 public interface VoteDao {
@@ -28,4 +26,33 @@ public interface VoteDao {
 	public int checkUserAddTicket(SingleCount sc);
 	//查找用户类型
 	public int getUserTypeByUserId(int userId);
+
+	/**
+	 * 	投票
+	 * 	<insert id="insertSessionCount" parameterType="com.xtdx.pojo.SessionCount">
+	 * 		INSERT INTO `VOTE`.`sesscount` (
+	 * 		  `sessionId`,
+	 * 		  `playerId`,
+	 * 		  `userId`,
+	 * 		  `ballot`
+	 * 		)
+	 * 		VALUES
+	 * 		  (
+	 * 			#{sessionId},
+	 * 			#{playerId},
+	 * 			#{userId},
+	 * 			#{ballot}
+	 * 		  );
+	 *
+	 * 	</insert>
+	 */
+	public int insertSessionCount(SessionCount sessionCount);
+	/**
+	 * 查找选票
+	 * 	<select id="selectSessionCount" parameterType="com.xtdx.pojo.SessionCount" resultType="com.xtdx.pojo.SessionCount">
+	 * 		SELECT * FROM sesscount WHERE sessionId=#{sessionId} AND playerId=#{playerId} AND  userId=#{userId};
+	 * 	</select>
+	 */
+	public SessionCount selectSessionCount(SessionCount sessionCount);
+
 }

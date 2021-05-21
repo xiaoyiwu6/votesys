@@ -3,8 +3,6 @@ package com.xtdx.service;
 import java.util.HashMap;
 import java.util.List;
 
-import com.sun.org.apache.bcel.internal.generic.ARETURN;
-import com.sun.org.apache.bcel.internal.generic.DRETURN;
 import com.xtdx.dao.SessionDao;
 import com.xtdx.pojo.Player;
 import com.xtdx.pojo.PlayerBindCount;
@@ -117,5 +115,12 @@ public class SessionService {
 	public List<PlayerBindCount> selectPlayerBindCount(int sessionId) {
 		return sessionDao.selectPlayerBindCount(sessionId);
 	}
+
+	public int beginSessionById(String start,int sessionId){return sessionDao.beginSessionById(start,sessionId);}
+	public int endCurSession(String end){return sessionDao.endCurSession(end);};
+
+
+	public Session selectCurSession(){return sessionDao.getCurSession();}
+	public int updateSessionNameBySessionId(String sessionName, int sessionId){return sessionDao.updateSessionNameBySessionId(sessionName,sessionId);}
 
 }

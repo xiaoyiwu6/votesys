@@ -2,11 +2,12 @@ package com.xtdx.service;
 
 import java.util.List;
 
+import com.xtdx.pojo.Player;
+import com.xtdx.pojo.SessionCount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xtdx.dao.VoteDao;
-import com.xtdx.pojo.Player;
 import com.xtdx.pojo.SessionTable;
 import com.xtdx.pojo.SingleCount;
 
@@ -41,4 +42,8 @@ public class VoteService {
 	public int getUserTypeByUserId(int userId){
 		return voteDao.getUserTypeByUserId(userId);
 	}
+	public int insertSessionCount(SessionCount sessionCount){return voteDao.insertSessionCount(sessionCount);}
+	public SessionCount selectSessionCount(SessionCount sessionCount){return voteDao.selectSessionCount(sessionCount);}
+
+
 }

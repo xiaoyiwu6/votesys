@@ -1,12 +1,15 @@
 package com.xtdx.service;
 
+import java.util.Iterator;
 import java.util.List;
 
+import com.xtdx.pojo.Player;
+import com.xtdx.pojo.PlayerCount;
+import com.xtdx.pojo.SessionCount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xtdx.dao.PlayerDao;
-import com.xtdx.pojo.Player;
 
 @Service
 public class PlayerService {
@@ -70,5 +73,14 @@ public class PlayerService {
 	public boolean updateStateByPlayerId(int playerId) {//修改被淘汰选手状态
 		return playerDao.updateStateByPlayerId(playerId);
 	}
+
+	public List<PlayerCount> selectAllPlayerCount(){return playerDao.selectAllPlayerCount();}
+
+	public List<SessionCount> checkAndCount(int sessionId, int playerId) {
+		return  playerDao.selectSessionCount(sessionId,playerId);
+	}
+
+	public int cleanPlayerState(){return playerDao.cleanPlayerState();}
+	public int updatePlayerCount(int sessionId,int playerId, int count){return  playerDao.updatePlayerCount(sessionId,playerId,count);}
 
 }

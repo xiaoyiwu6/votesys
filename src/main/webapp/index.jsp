@@ -37,19 +37,38 @@
             }
         }
     </style>
+    <!-- Custom styles for this template -->
+    <link href="${APP_PATH}/css/album.css" rel="stylesheet">
     <script type="application/javascript">
+
         function vote(playerId) {
+            var formData = new FormData();
+            formData.append("sessionId",${curSession.sessionId});
+            formData.append("playerId",playerId);
+            formData.append("userId",${sessionScope.curUser.userId});
+
+
+            console.log(${curSession.sessionId});
+            console.log(playerId);
+            console.log(${sessionScope.curUser.userId});
+
             $.ajax({
-                url:"${APP_PATH}/votePlayer",
-                data:{sessionId:${curSession.sessionId},playerId:playerId,userId:${curUser.userId}},
-                type:"post",
-                dataType:"json",
-                contentType:"application/json", //这个必须，不然后台接受时会出现乱码现象
-                success:function(data){
-                    console.log("修改成功");
+                url: "${APP_PATH}/votePlayer.do",
+                data: formData,
+                async: true,
+                type: "post",
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if(data=="1"){
+                        alert("投票成功");
+                        location.reload();
+                    }else{
+                        alert("不可重复投票！");
+                    }
 
                 },
-                error:function(){
+                error: function () {
                     alert("出错了");
                 }
             })
@@ -77,6 +96,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="${APP_PATH}/PlayerManagement.do">候选人管理</a>
                 </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="${APP_PATH}/vote.do">我的选票</a>
+                </li>
             </ul>
             <form class="form-inline mt-2 mt-md-0" action="${APP_PATH}/signOut.do">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sign out</button>
@@ -91,7 +113,6 @@
     <div class="jumbotron bg-white">
         <h1>欢迎来到WXY政务投票系统</h1>
         <p>当前尚且没有正在进行的投票活动</p>
-        <p><a class="btn btn-primary btn-lg" href="#" role="button">查看往期投票活动</a></p>
     </div>
 </c:if>
 <c:if test="${!empty curSession}">
@@ -108,30 +129,24 @@
             <div class="container">
 
                 <div class="row">
-                    <c:forEach items="${curPlayers}" var="pbc">
-                        <div class="col-sm-6 col-md-4">
-                            <div class="thumbnail">
-                                <img src="${pbc.player.picAddress}" alt="...">
-                                <div class="caption">
-                                    <h3>${pbc.player.playerName}</h3>
-                                    <p>${pbc.player.slogan}</p>
-                                    <p>${pbc.player.info}</p>
-                                    <p><button id="voetButton" class="btn btn-primary" onclick="vote(${pbc.player.playerId})" role="button">投票</button>
-                                        <button class="btn btn-default" disabled>当前票数：${pbc.count}</button>
-                                    </p>
+                    <c:forEach items="${curPlayers}" var="player">
+                        <div class="col-md-4">
+                            <div class="card mb-4 shadow-sm">
+                                <img src="${player.player.picAddress}" class="bd-placeholder-img card-img-top" width="100%" height="225" alt="">
+                                <div class="card-body">
+                                    <p class="card-body">${player.player.playerName}<br>${player.player.slogan}<br>${player.player.info}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" disabled></button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="vote(${player.playerId})">投票</button>
+                                        </div>
+                                        <small class="text-muted">当前票数：${player.count}</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </c:forEach>
                 </div>
-                <script type="application/javascript">
-                    $("#voetButton").click(function () {
-                        console.log("有按钮被触发");
-                        $(this).text("已投");
-                        $(this).attr("disabled","disabled");
-                        $(this).attr("class","btn btn-default");
-                    })
-                </script>
             </div>
         </div>
 

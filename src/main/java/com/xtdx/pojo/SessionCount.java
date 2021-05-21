@@ -21,7 +21,6 @@ public class SessionCount {
                 "sessionId=" + sessionId +
                 ", playerId=" + playerId +
                 ", userId=" + userId +
-                ", ballot='" + ballot + '\'' +
                 '}';
     }
 

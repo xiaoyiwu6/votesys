@@ -2,9 +2,12 @@ package com.xtdx.dao;
 
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
+import com.xtdx.controller.PlayerController;
 import com.xtdx.pojo.Player;
+import com.xtdx.pojo.PlayerCount;
+import com.xtdx.pojo.SessionCount;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PlayerDao {
@@ -22,4 +25,43 @@ public interface PlayerDao {
 	public int getPlayerNumByNum(int num);//利用选手参赛场次num查询本轮比赛总选手数
 	public int getStateByPlayerId(int playerId);//查询选手是否被淘汰
 	public boolean updateStateByPlayerId(int playerId);//修改被淘汰选手状态
+	/**
+	 * 查询所有选手结果
+	 * <select id="selectAllPlayerCount" resultMap="playerCountResult">
+	 * 		SELECT * FROM player INNER JOIN sessplayer ON player.`playerId`=sessplayer.`playerId`;
+	 * 	</select>
+	 */
+	public List<PlayerCount> selectAllPlayerCount();
+	/**
+	 * 查找选票
+	 * 	<select id="selectSessionCount"  resultType="com.xtdx.pojo.SessionCount">
+	 * 		SELECT * FROM sesscount WHERE sessionId=#{sessionId} AND playerId=#{playerId} ;
+	 * 	</select>
+	 */
+	public List<SessionCount> selectSessionCount(@Param("sessionId") int sessionId,@Param("playerId") int playerId);
+
+	/**
+	 * 清楚候选人状态
+	 * 	<update id="cleanPlayerState" >
+	 * 		UPDATE
+	 * 		  `VOTE`.`player`
+	 * 		SET
+	 * 		  `state` = 0
+	 * 		WHERE `state` = 1;
+	 * 	</update>
+	 */
+	public int cleanPlayerState();
+
+	/**
+	 * 更新选票
+	 * 	<update id="updatePlayerCount" >
+	 * 		UPDATE
+	 * 		  `VOTE`.`sessplayer`
+	 * 		SET
+	 * 		  `count` = #{count}
+	 * 		WHERE `sessionId` = #{sessionId}
+	 * 		  AND `playerId` = #{playerId};
+	 * 	</update>
+	 */
+	public int updatePlayerCount(@Param("sessionId") int sessionId,@Param("playerId") int playerId, @Param("count") int count);
 }

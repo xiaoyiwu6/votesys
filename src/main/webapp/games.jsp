@@ -39,6 +39,31 @@
     </style>
     <!-- Custom styles for this template -->
     <link href="${APP_PATH}/css/navbar.css" rel="stylesheet">
+    <script type="application/javascript">
+        function beginGame(sessionId) {
+            var formData = new FormData();
+            formData.append("sessionId",sessionId);
+            console.log(sessionId);
+            $.ajax({
+                url:"${APP_PATH}/beginGame.do",
+                data: formData,
+                async: true,
+                type: "post",
+                processData:false,
+                contentType:false,
+                success:function(data){
+                    if(data=="1"){
+                        location.reload();
+                    }else{
+                        window.alert("还有活动正在进行，无法开启！");
+                    }
+                },
+                error:function(){
+                    alert("出错了");
+                }
+            })
+        }
+    </script>
 </head>
 <body>
 <c:if test="${sessionScope.curUser.level==1}">
@@ -62,6 +87,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="${APP_PATH}/PlayerManagement.do">候选人管理</a>
                 </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="${APP_PATH}/vote.do">我的选票</a>
+                </li>
             </ul>
             <form class="form-inline mt-2 mt-md-0" action="${APP_PATH}/signOut.do">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sign out</button>
@@ -84,6 +112,8 @@
             <td>Start</td>
             <td>End</td>
             <td>Edit</td>
+            <td>Start</td>
+            <td>End</td>
         </tr>
         </thead>
         <tbody>
@@ -108,7 +138,27 @@
                         <td>${session.end}</td>
                     </c:otherwise>
                 </c:choose>
-                <td><a href="${APP_PATH}/addSession/addPlayer/${session.sessionId}.do" >编辑</a></td>
+                <td><a href="${APP_PATH}/addSession/addPlayer/${session.sessionId}.do" class="btn btn-primary" >编辑</a></td>
+                <c:choose>
+                    <c:when test="${!empty session.start}">
+                        <td><button  class="btn btn-default" disabled >已开始</button></td>
+                    </c:when>
+                    <c:otherwise>
+                        <td><button class="btn btn-primary" onclick="beginGame(${session.sessionId})">开始</button></td>
+                    </c:otherwise>
+                </c:choose>
+                <c:choose>
+                    <c:when test="${empty session.start}">
+                        <td><a href="#" class="btn disabled" role="button">未开始</a></td>
+                    </c:when>
+                    <c:when test="${!empty session.end}">
+                        <td><a href="#" class="disabled" >已结束</a></td>
+                    </c:when>
+                    <c:otherwise>
+                        <td><a class="btn btn-primary" href="${APP_PATH}/getCount.do">计票</a></td>
+
+                    </c:otherwise>
+                </c:choose>
             </tr>
         </c:forEach>
         </tbody>

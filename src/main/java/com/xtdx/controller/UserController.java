@@ -2,6 +2,10 @@ package com.xtdx.controller;
 
 import java.util.List;
 
+import com.xtdx.pojo.Player;
+import com.xtdx.pojo.Session;
+import com.xtdx.pojo.SessionCount;
+import com.xtdx.utils.QRCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +23,10 @@ import javax.servlet.http.HttpSession;
 public class UserController {
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private SessionService sessionService;
+	@Autowired
+	private PlayerService playerService;
 
 	@RequestMapping("/addUser")
 	public String addUser() {
@@ -54,4 +62,29 @@ public class UserController {
 	public String back1() {
 		return "login_succ";
 	}
+
+	//获取用户选票,我的选票界面
+	@RequestMapping("/vote")
+	public String getVote(HttpSession httpSession, Model model){
+		Session curSession = sessionService.getCurSession();
+		User user = (User) httpSession.getAttribute("curUser");
+		SessionCount sessionCount = userService.getSessionCountByUserIdAndSessionId(user.getUserId(),curSession.getSessionId());
+		System.out.println(user.toString());
+		if(sessionCount!=null){
+			//回显我的选票信息
+			Player player = playerService.getPlayerById(sessionCount.getPlayerId());
+			model.addAttribute("player",player);
+			System.out.println(sessionCount.toString());
+			System.out.println(player.toString());
+
+			//回显二维码
+			model.addAttribute("qrSrc", QRCodeUtil.getQRCodeBase64(sessionCount.getBallot(),300,300));
+		}
+		model.addAttribute("sessionCount",sessionCount);
+		return "myVote";
+	}
+
+
+
+
 }

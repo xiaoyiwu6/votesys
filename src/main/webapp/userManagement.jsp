@@ -80,6 +80,9 @@
 				<li class="nav-item">
 					<a class="nav-link" href="${APP_PATH}/PlayerManagement.do">候选人管理</a>
 				</li>
+				<li class="nav-item ">
+					<a class="nav-link" href="${APP_PATH}/vote.do">我的选票</a>
+				</li>
 			</ul>
 			<form class="form-inline mt-2 mt-md-0" action="${APP_PATH}/signOut.do">
 				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sign out</button>
