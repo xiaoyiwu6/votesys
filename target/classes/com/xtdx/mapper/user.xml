@@ -32,4 +32,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<delete id="deleteUser" parameterType="int">
 		delete from user where userId=#{userId};
 	</delete>
+    
+    <!--  根据选民ID和当前选投票活动获取选票  -->
+    <select id="getSessionCountByUserIdAndSessionId" resultType="com.xtdx.pojo.SessionCount">
+        SELECT * FROM sesscount WHERE userId=#{userId} AND sessionId=#{sessionId};
+    </select>
+
+    <!--  插入密钥对  -->
+    <insert id="insertKeyPairsById" parameterType="com.xtdx.pojo.KeyPairs">
+        INSERT INTO `VOTE`.`keypairs` (
+          `userId`,
+          `rsaPubKey`,
+          `rsaPriKey`
+          <if test="eccPubKey != null and eccPubKey != ''">
+              ,`eccPubKey`,
+              `eccPriKey`
+          </if>
+
+        )
+        VALUES
+          (
+            #{userId},
+            #{rsaPubKey},
+            #{rsaPriKey}
+            <if test="eccPubKey != null and eccPubKey != ''">
+                ,#{eccPubKey},
+                #{eccPriKey}
+            </if>
+          );
+    </insert>
+<!--    获取密钥对-->
+    <select id="selectKeyPairsByUserId" parameterType="int" resultType="com.xtdx.pojo.KeyPairs">
+        SELECT * FROM keypairs WHERE userId=#{userId};
+    </select>
 </mapper>

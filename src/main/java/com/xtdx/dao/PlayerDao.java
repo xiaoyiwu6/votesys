@@ -64,4 +64,11 @@ public interface PlayerDao {
 	 * 	</update>
 	 */
 	public int updatePlayerCount(@Param("sessionId") int sessionId,@Param("playerId") int playerId, @Param("count") int count);
+
+	/**
+	 * <update id="updatePlayerState" parameterType="int">
+	 * 		UPDATE player SET state=1 WHERE playerId=#{playerId};
+	 * 	</update>
+	 */
+	public int updatePlayerState(int playerId);
 }

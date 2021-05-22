@@ -1,12 +1,15 @@
 package com.xtdx.service;
 
+import java.security.KeyPair;
 import java.util.List;
 import java.util.Map;
 
-import com.xtdx.encryption.ECC;
+import com.xtdx.encryption.ECDSA;
 import com.xtdx.encryption.RSA;
 import com.xtdx.pojo.KeyPairs;
 import com.xtdx.pojo.SessionCount;
+import com.xtdx.utils.HexUtil;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.KeyPairGeneratorSpi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +40,7 @@ public class UserService {
 	public SessionCount getSessionCountByUserIdAndSessionId(int userId, int sessionId){return userDao.getSessionCountByUserIdAndSessionId(userId,sessionId);}
 
 	//生成密钥对
-	public int genKeyPairs(int userId){
+	public int genKeyPairs(int userId) throws Exception {
 		//初始化密钥对类
 		KeyPairs keyPairs = new KeyPairs();
 		keyPairs.setUserId(userId);
@@ -47,10 +50,10 @@ public class UserService {
 		keyPairs.setRsaPubKey(RSA.getPublicKey(rsaMap));
 		keyPairs.setRsaPriKey(RSA.getPrivateKey(rsaMap));
 		//获取ECC密钥对
-		//Map<String,Object> eccMap = ECC.getKeyPair();
+		KeyPair ECDSAKeyPairs = ECDSA.getKeyPair();
 		//放入
-		//keyPairs.setEccPubKey(ECC.getPublicKey(eccMap));
-		//keyPairs.setRsaPriKey(ECC.getPrivateKey(eccMap));
+		keyPairs.setEccPubKey(HexUtil.encodeHexString(ECDSAKeyPairs.getPublic().getEncoded()));
+		keyPairs.setEccPriKey(HexUtil.encodeHexString(ECDSAKeyPairs.getPrivate().getEncoded()));
 
 		return userDao.insertKeyPairsById(keyPairs);
 	}

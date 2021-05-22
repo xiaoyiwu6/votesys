@@ -24,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="count" property="count"></result>
 	</resultMap>
 	<select id="selectAllPlayerCount" resultMap="playerCountResult">
-		SELECT * FROM player INNER JOIN sessplayer ON player.`playerId`=sessplayer.`playerId`;
+		SELECT * FROM player INNER JOIN sessplayer ON player.`playerId`=sessplayer.`playerId` WHERE state=1;
 	</select>
 	<select id="getAllPlayers" resultType="com.xtdx.pojo.Player">
 		select * from player;
@@ -49,6 +49,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			smallImg=#{smallImg},
 		   </if>
 		</trim>
+	</update>
+	<update id="updatePlayerState" parameterType="int">
+		UPDATE player SET state=1 WHERE playerId=#{playerId};
 	</update>
 	<select id="getPlayers" resultType="com.xtdx.pojo.Player">
 		SELECT * FROM player

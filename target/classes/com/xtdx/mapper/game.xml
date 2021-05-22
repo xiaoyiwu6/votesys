@@ -100,13 +100,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		INSERT INTO `VOTE`.`session` (
 		  `sessionName`,
 		  `state`,
-		  `create`,
+		  `create`
 		)
 		VALUES
 		  (
-			'session',
+			${sessionName},
 			0,
-			${create}
+			STR_TO_DATE(#{create },'%Y-%m-%d %H:%i:%s')
 		  );
 
 	</insert>
@@ -125,4 +125,101 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		  (${sessionId}, ${playerId}, 0);
 
 	</insert>
+
+	<!-- 查询正在进行的投票的候选人信息 -->
+	<select id="getAbsentPlayersFromCurSession" parameterType="int" resultType="com.xtdx.pojo.Player">
+		SELECT * FROM player WHERE playerId  IN (SELECT playerId FROM sessplayer,`session` WHERE sessplayer.sessionId=${sessionId} AND state=1);
+	</select>
+
+	<!-- 插入票据 -->
+	<insert id="votePlayer">
+		INSERT INTO `VOTE`.`sesscount` (
+		  `sessionId`,
+		  `playerId`,
+		<if test="ballot != null and ballot != ''">
+			`ballot`,
+		</if>
+		  `userId`
+		)
+		VALUES
+		  (
+			${sessionId},
+			${playerId},
+		<if test="ballot != null and ballot != ''">
+			${ballot},
+		</if>
+			${userId}
+		  );
+
+	</insert>
+	<!-- 投票计数 -->
+	<update id="updateCount" parameterType="hashmap">
+		UPDATE
+		  `VOTE`.`sessplayer`
+		SET
+		  `count` = `count`+1
+		WHERE `sessionId` = ${sessionId}
+		  AND `playerId` = ${playerId};
+	</update>
+	<!-- 查询票数 -->
+	<select id="selectCount" parameterType="hashmap" resultType="int">
+		SELECT count FROM sessplayer
+		WHERE sessionId=${sessionId}
+		AND playerId=${playerId};
+	</select>
+	
+	<resultMap id="PBCResult" type="com.xtdx.pojo.PlayerBindCount">
+		<id column="sessionId" property="sessionId"></id>
+		<id column="playerId" property="playerId"></id>
+		<result column="count" property="count"></result>
+
+		<association property="player" javaType="com.xtdx.pojo.Player" resultMap="playerResult"></association>
+	</resultMap>
+	<resultMap id="playerResult" type="com.xtdx.pojo.Player">
+		<id column="playerId" property="playerId"></id>
+		<result column="playerName" property="playerName"></result>
+		<result column="state" property="state"></result>
+		<result column="num" property="num"></result>
+		<result column="picAddress" property="picAddress"></result>
+		<result column="dateOfBirth" property="dateOfBirth"></result>
+		<result column="smallImg" property="smallImg"></result>
+		<result column="sex" property="sex"></result>
+		<result column="slogan" property="slogan"></result>
+	</resultMap>
+	<!-- 联查查询，用于index页 -->
+	<select id="selectPlayerBindCount" parameterType="int" resultMap="PBCResult">
+		SELECT * FROM sessplayer INNER JOIN player
+		ON sessplayer.`playerId` = player.`playerId`
+		WHERE sessionId=${sessionId};
+	</select>
+
+	<!-- 开始session -->
+	<update id="beginSessionById" >
+		UPDATE
+		  `VOTE`.`session`
+		SET
+		  `state` = 1,
+		  `start` = STR_TO_DATE(#{start},'%Y-%m-%d %H:%i:%s')
+		WHERE `sessionId` = ${sessionId};
+	</update>
+
+	<!-- 结束session -->
+	<update id="endCurSession" parameterType="String">
+		UPDATE
+		  `VOTE`.`session`
+		SET
+		  `state` = 2,
+		  `end` = STR_TO_DATE(#{end},'%Y-%m-%d %H:%i:%s')
+		WHERE `state` = 1;
+	</update>
+
+	<!-- 查找正在进行的session -->
+	<select id="selectCurSession" resultType="com.xtdx.pojo.Session">
+		SELECT * FROM `VOTE`.`session` WHERE state=1;
+	</select>
+
+	<!-- 修改活动名字 -->
+	<update id="updateSessionNameBySessionId" >
+		UPDATE `session` SET sessionName=#{sessionName} WHERE  sessionId=#{sessionId};
+	</update>
 </mapper>

@@ -2,11 +2,8 @@ package com.xtdx.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-import com.xtdx.encryption.ECC;
-import com.xtdx.encryption.RSA;
 import com.xtdx.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -163,8 +160,14 @@ public class GameController {
 	}
 	@RequestMapping("/addSession/addPlayer/{sessionId}/{playerId}")
 	@ResponseBody
-	public void addPlayer(@PathVariable("sessionId") int sessionId,@PathVariable("playerId") int playerId){
-		sessionService.insertPlayerToSession(sessionId,playerId);
+	public String addPlayer(@PathVariable("sessionId") int sessionId,@PathVariable("playerId") int playerId){
+		int i = sessionService.insertPlayerToSession(sessionId,playerId);
+		playerService.updatePlayerState(playerId);
+		if(i>0){
+			return "1";
+		}else {
+			return "0";
+		}
 	}
 
 	//结束当前活动
@@ -191,28 +194,6 @@ public class GameController {
 	public String getCount(Model model) throws Exception {
 		//获取所有参与本轮投票活动的候选人
 		List<PlayerCount> playerCounts = playerService.selectAllPlayerCount();
-//		//获取迭代器
-//		Iterable<PlayerCount> playerCountIterable = (Iterable<PlayerCount>) playerCounts.iterator();
-//		Iterator<PlayerCount> iterator = playerCountIterable.iterator();
-//		//对所有候选人的票选进行计票验票
-//		while(iterator.hasNext()){
-//			//获取必要数据
-//			SessionPlayer sessionPlayer = iterator.next().getSessionPlayer();
-//			String RSAEncryptedStr = sessionPlayer.getRSAEncryptedStr();
-//			String RSApublicKey = sessionPlayer.getRSAPublicKey();
-//			String RSASign = sessionPlayer.getRSABallot();
-//			String ECCEncryptedStr = sessionPlayer.getECCEncryptedStr();
-//			String ECCpublicKey = sessionPlayer.getECCPublicKey();
-//			String ECCSign = sessionPlayer.getECCBallot();
-//			//RSA校验
-//			boolean RSA_RESULT = RSA.verify(RSAEncryptedStr,RSApublicKey,RSASign);
-//			//ECC校验
-//			boolean ECC_RESULT = ECC.verify(ECCEncryptedStr,ECCpublicKey,ECCSign);
-//			//检验是否通过并纳入计票
-//			if(RSA_RESULT && ECC_RESULT){
-//				sessionPlayer.setCount(sessionPlayer.getCount()+1);
-//			}
-//		}
 
 		model.addAttribute("playerCounts",playerCounts);
 		return "getCount";

@@ -37,7 +37,7 @@ public class LoginController {
 		if(CheckRole.checkLoginAndRole(session)>=0){
 			//查询当前是否有正在进行的投票
 			Session curSession = sessionService.getCurSession();
-			System.out.println(curSession.toString());
+			//System.out.println(curSession.toString());
 			if(curSession!=null){
 				List<PlayerBindCount> curPlayersAndCount = sessionService.selectPlayerBindCount(curSession.getSessionId());
 				model.addAttribute("curSession",curSession);
@@ -53,7 +53,7 @@ public class LoginController {
 	public String signIndex(){ return "sign_up";}
 	@RequestMapping("/signUp")
 	@ResponseBody
-	public String sign(User user,Model model){
+	public String sign(User user,Model model) throws Exception {
 		System.out.println(user.toString());
 		//注册
 		int i = loginService.sign(user);

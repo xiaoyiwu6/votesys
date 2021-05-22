@@ -83,4 +83,6 @@ public class PlayerService {
 	public int cleanPlayerState(){return playerDao.cleanPlayerState();}
 	public int updatePlayerCount(int sessionId,int playerId, int count){return  playerDao.updatePlayerCount(sessionId,playerId,count);}
 
+	public int updatePlayerState(int playerId){return playerDao.updatePlayerState(playerId);}
+
 }

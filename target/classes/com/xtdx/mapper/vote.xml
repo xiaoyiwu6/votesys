@@ -33,4 +33,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="getUserTypeByUserId" parameterType="int" resultType="int">
 		select type from user where userId=#{userId}
 	</select>
+
+<!--	投票-->
+	<insert id="insertSessionCount" parameterType="com.xtdx.pojo.SessionCount">
+		INSERT INTO `VOTE`.`sesscount` (
+		  `sessionId`,
+		  `playerId`,
+		  `userId`,
+		  `ballot`
+		)
+		VALUES
+		  (
+			#{sessionId},
+			#{playerId},
+			#{userId},
+			#{ballot}
+		  );
+
+	</insert>
+<!--	查找选票-->
+	<select id="selectSessionCount" parameterType="com.xtdx.pojo.SessionCount" resultType="com.xtdx.pojo.SessionCount">
+		SELECT * FROM sesscount WHERE sessionId=#{sessionId} AND playerId=#{playerId} AND  userId=#{userId};
+	</select>
 </mapper>

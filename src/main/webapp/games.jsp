@@ -138,7 +138,15 @@
                         <td>${session.end}</td>
                     </c:otherwise>
                 </c:choose>
-                <td><a href="${APP_PATH}/addSession/addPlayer/${session.sessionId}.do" class="btn btn-primary" >编辑</a></td>
+                <c:choose>
+                    <c:when test="${empty session.end}">
+                        <td><a href="${APP_PATH}/addSession/addPlayer/${session.sessionId}.do" class="btn btn-primary" >编辑</a></td>
+                    </c:when>
+                    <c:when test="${!empty session.end}">
+                        <td><button  class="btn btn-default" disabled >已结束</button></td>
+                    </c:when>
+
+                </c:choose>
                 <c:choose>
                     <c:when test="${!empty session.start}">
                         <td><button  class="btn btn-default" disabled >已开始</button></td>
@@ -152,7 +160,7 @@
                         <td><a href="#" class="btn disabled" role="button">未开始</a></td>
                     </c:when>
                     <c:when test="${!empty session.end}">
-                        <td><a href="#" class="disabled" >已结束</a></td>
+                        <td><button  class="btn btn-default" disabled >已结束</button></td>
                     </c:when>
                     <c:otherwise>
                         <td><a class="btn btn-primary" href="${APP_PATH}/getCount.do">计票</a></td>
